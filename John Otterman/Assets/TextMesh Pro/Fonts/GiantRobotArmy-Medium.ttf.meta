@@ -1,0 +1,22 @@
+fileFormatVersion: 2
+guid: f47d9c5b3e5b5c5478f97dab153daab6
+TrueTypeFontImporter:
+  externalObjects: {}
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontNames:
+  - GiantRobotArmy
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: 775b7ef0e8f09c242b97fa63c0817906, type: 3}
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  useLegacyBoundsCalculation: 0
+  shouldRoundAdvanceValue: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
