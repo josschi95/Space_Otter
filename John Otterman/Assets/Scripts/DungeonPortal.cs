@@ -44,6 +44,11 @@ public class DungeonPortal : MonoBehaviour
         portalUI.SetActive(true);
         PlayerController.instance.ToggleMovement(false);
 
+        //Open to the tab with the highest available stage
+        int currentDimensionTab = 0;
+        if (GameManager.instance.ClearedStages[5] == true) currentDimensionTab = 2;
+        else if (GameManager.instance.ClearedStages[2] == true) currentDimensionTab = 1;
+        ToggleDimensionTabs(currentDimensionTab);
 
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;

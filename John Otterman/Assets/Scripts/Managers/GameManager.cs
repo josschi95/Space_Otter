@@ -8,6 +8,37 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
 
+
+
+    public delegate void OnPlayerClamsChangeCallback();
+    public OnPlayerClamsChangeCallback onClamsChange;
+
+    public delegate void OnPlayerScoreChangeCallback();
+    public OnPlayerScoreChangeCallback onScoreChange;
+
+    public PlayerController player { get; private set; }
+
+
+    public JSONSaving saveSystem { get; private set; }
+
+    public int sceneStageDifficulty { get; private set; }
+
+    public Material spriteFlashMat;
+    private Coroutine scoreMultiplierDecayCoroutine;
+
+    #region - Player and Stage Stats -
+    public float playerScore { get; private set; }
+    public float scoreMultiplier;
+    public int playerClams { get; private set; }
+    public int clamsGainedOnCurrentRun { get; private set; }
+
+    [SerializeField] private bool[] m_clearedStages = { false, false, false, false, false, false, false, false, false };
+    public bool[] ClearedStages => m_clearedStages;
+
+    private int[] m_stageHighScores = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+    public int[] StageHighScores => m_stageHighScores;
+    #endregion
+
     private void Awake()
     {
         if (instance != null)
@@ -21,52 +52,23 @@ public class GameManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
         saveSystem = GetComponent<JSONSaving>();
         SceneManager.sceneLoaded += OnSceneLoaded;
-        
     }
-
-    public delegate void OnPlayerClamsChangeCallback();
-    public OnPlayerClamsChangeCallback onClamsChange;
-
-    public delegate void OnPlayerScoreChangeCallback();
-    public OnPlayerScoreChangeCallback onScoreChange;
-
-    public PlayerController player { get; private set; }
-    public float playerScore { get; private set; }
-    public float scoreMultiplier;
-    public int playerClams { get; private set; }
-    public int clamsGainedOnCurrentRun { get; private set; }
-
-    public JSONSaving saveSystem { get; private set; }
-
-    public int sceneStageDifficulty { get; private set; }
-
-    public Material spriteFlashMat;
-
-    [SerializeField] private bool[] m_clearedStages = { false, false, false, false, false, false, false, false, false };
-    public bool[] ClearedStages => m_clearedStages;
-
-    private int[] m_stageHighScores = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-    public int[] StageHighScores => m_stageHighScores;
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        player = PlayerController.instance;
-        player.combat.ToggleCombat(scene.buildIndex >= 2 && scene.buildIndex <= 5);
-        player.transform.position = Vector3.zero;
-        if (scene.buildIndex == 6) player.transform.position = Vector2.one * 100;
-        player.OnRestoreAll();
-        playerScore = 0;
-        onScoreChange?.Invoke();
-
         var dungeonManager = DungeonManager.instance;
         if (dungeonManager != null) //the player has entered a dungeon
         {
             dungeonManager.SetStageNum(sceneStageDifficulty);
+            scoreMultiplierDecayCoroutine = StartCoroutine(ScoreMultiplierDecay());
         }
+        else if (scoreMultiplierDecayCoroutine != null) StopCoroutine(scoreMultiplierDecayCoroutine);
 
-        playerClams += clamsGainedOnCurrentRun;
-        clamsGainedOnCurrentRun = 0;
-        onClamsChange?.Invoke();
+        PlayerSceneChanges(scene.buildIndex);
+
+        playerScore = 0;
+        onScoreChange?.Invoke();
+        MergeClams();
 
         //if (scene.buildIndex > 0) ObjectPooler.OnSceneChange();
         AudioManager.SetTheme(scene.buildIndex);
@@ -76,9 +78,30 @@ public class GameManager : MonoBehaviour
         if (scene.buildIndex == 1) saveSystem.SaveData();
     }
 
+    private void PlayerSceneChanges(int buildIndex)
+    {
+        player = PlayerController.instance;
+        player.combat.ToggleCombat(buildIndex >= 2 && buildIndex <= 5);
+        player.transform.position = Vector3.zero;
+        if (buildIndex == 6) player.transform.position = Vector2.one * 100;
+        player.OnRestoreAll();
+        
+    }
+
+    #region - Player Score -
     private void IncreaseScoreMultiplier()
     {
         scoreMultiplier += 0.1f;
+    }
+
+    private IEnumerator ScoreMultiplierDecay()
+    {
+        while (true)
+        {
+            scoreMultiplier -= 0.01f;
+            if (scoreMultiplier <= 0) scoreMultiplier = 0;
+            yield return new WaitForSeconds(1);
+        }
     }
 
     public static void OnEnemyHit()
@@ -91,6 +114,7 @@ public class GameManager : MonoBehaviour
         instance.playerScore += points * (1 + instance.scoreMultiplier);
         instance.onScoreChange?.Invoke();
     }
+    #endregion
 
     #region - Player Clams -
     public static void OnClamsGained(int clams)
@@ -113,8 +137,16 @@ public class GameManager : MonoBehaviour
 
         instance.onClamsChange?.Invoke();
     }
+
+    private void MergeClams()
+    {
+        playerClams += clamsGainedOnCurrentRun;
+        clamsGainedOnCurrentRun = 0;
+        onClamsChange?.Invoke();
+    }
     #endregion
 
+    #region - Stage Settings -
     public void SetStageDifficulty(int difficulty)
     {
         sceneStageDifficulty = difficulty;
@@ -148,6 +180,7 @@ public class GameManager : MonoBehaviour
         }
         return false;
     }
+    #endregion
 
     public static void OnGameOver()
     {

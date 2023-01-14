@@ -66,7 +66,7 @@ public class EnemyCombat : MonoBehaviour
 
     private void Update()
     {
-        if (!controller.isAlive || !controller.CanAct) return;
+        if (!controller.IsAlive || !controller.CanAct) return;
 
         pointer.eulerAngles = new Vector3(0, 0, controller.angleToPlayer);
 

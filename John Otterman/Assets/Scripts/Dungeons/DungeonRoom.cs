@@ -6,6 +6,8 @@ public class DungeonRoom : MonoBehaviour
 {
     [SerializeField] private Transform m_roomCenter;
     [SerializeField] private DungeonRoomEntrances[] m_entrances;
+    [SerializeField] private SpriteRenderer spriteRenderer;
+    [SerializeField] private Sprite[] dimensionalSprites;
 
     public Transform Center => m_roomCenter;
     public DungeonRoomEntrances[] Entrances => m_entrances;
@@ -39,6 +41,11 @@ public class DungeonRoom : MonoBehaviour
             if (HasEntranceOnDirection(directions[i])) return true;
         }
         return false;
+    }
+
+    public void SetDimensionDisplay(Dimension dimension)
+    {
+        spriteRenderer.sprite = dimensionalSprites[(int)dimension];
     }
 }
 

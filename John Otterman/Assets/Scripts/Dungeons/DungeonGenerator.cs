@@ -15,11 +15,11 @@ public class DungeonGenerator : MonoBehaviour
     [SerializeField] private DungeonRoom[] twoWayRooms; //Dungeon rooms which has 2 entrances
     [SerializeField] private DungeonRoom[] endCapRooms; //Dungeon rooms which have only one entrance
 
-    public List<GameObject> existingRooms { get; private set; } //The dungeon rooms which have been added
+    public List<DungeonRoom> dungeonRooms { get; private set; }
     private List<HallwayNode> openNodes; //the list of hallways which do not yet lead to another room
     [SerializeField] private List<HallwayNode> closedNodes; //the list of nodes which have been connected with another
 
-    private List<DungeonRoom> allDungeonRooms; //A combined list of all dungeon rooms, to cycle through looking for a good fit
+    private List<DungeonRoom> allRoomPrefabs; //A combined list of all dungeon rooms, to cycle through looking for a good fit
     private List<HallwayNode> nodesToRemove = new List<HallwayNode>(); //list to collect and remove overlapping nodes
     private Coroutine dungeonGenerationCoroutine;
 
@@ -32,15 +32,15 @@ public class DungeonGenerator : MonoBehaviour
 
         m_dungeonSize = size;
 
-        existingRooms = new List<GameObject>();
+        dungeonRooms = new List<DungeonRoom>();
         openNodes = new List<HallwayNode>();
         closedNodes = new List<HallwayNode>();
 
-        allDungeonRooms = new List<DungeonRoom>();
-        allDungeonRooms.Add(fourWayRoom);
-        allDungeonRooms.AddRange(threeWayRooms);
-        allDungeonRooms.AddRange(twoWayRooms);
-        allDungeonRooms.AddRange(endCapRooms);
+        allRoomPrefabs = new List<DungeonRoom>();
+        allRoomPrefabs.Add(fourWayRoom);
+        allRoomPrefabs.AddRange(threeWayRooms);
+        allRoomPrefabs.AddRange(twoWayRooms);
+        allRoomPrefabs.AddRange(endCapRooms);
 
         //Generate the first room in the dungeon
         AddRoom(fourWayRoom, transform.position);
@@ -52,7 +52,7 @@ public class DungeonGenerator : MonoBehaviour
     private IEnumerator BuildOutRooms()
     {
         //Generate rooms until the desired size has been reached
-        while (existingRooms.Count < m_dungeonSize + 1)
+        while (dungeonRooms.Count < m_dungeonSize + 1)
         {
             //Find an open nodes to connect the next room to
             var newNode = FindOpenNode();
@@ -92,15 +92,16 @@ public class DungeonGenerator : MonoBehaviour
             Vector3 replacementRoomPosition = GetAdjustedPosition(newNode.nodePosition, GetOpposite(newNode.direction)); //Ok so we have a room at this location
 
             //Remove old room
-            GameObject roomAtThisPosition = null;
-            for (int i = 0; i < existingRooms.Count; i++)
+            DungeonRoom roomAtThisPosition = null;
+            for (int i = 0; i < dungeonRooms.Count; i++)
             {
-                if (existingRooms[i].transform.position == replacementRoomPosition)
-                    roomAtThisPosition = existingRooms[i];
+                if (dungeonRooms[i].transform.position == replacementRoomPosition)
+                    roomAtThisPosition = dungeonRooms[i];
             }
-            existingRooms.Remove(roomAtThisPosition);
+
             //Remove the old room
-            Destroy(roomAtThisPosition);
+            dungeonRooms.Remove(roomAtThisPosition);
+            Destroy(roomAtThisPosition.gameObject);
 
             //I also want to make sure to remove the open nodes 
             var nodesToRemove = FindNeighborNodes(replacementRoomPosition);
@@ -153,17 +154,17 @@ public class DungeonGenerator : MonoBehaviour
         //closedNodes.Clear();
         Debug.Log("Dungeon Generation Complete");
 
-        for (int i = 0; i < existingRooms.Count; i++)
+        for (int i = 0; i < dungeonRooms.Count; i++)
         {
-            if (existingRooms[i].transform.position.x < bottomLeft.x)
-                bottomLeft.x = existingRooms[i].transform.position.x;
-            if (existingRooms[i].transform.position.y < bottomLeft.y)
-                bottomLeft.y = existingRooms[i].transform.position.y;
+            if (dungeonRooms[i].transform.position.x < bottomLeft.x)
+                bottomLeft.x = dungeonRooms[i].transform.position.x;
+            if (dungeonRooms[i].transform.position.y < bottomLeft.y)
+                bottomLeft.y = dungeonRooms[i].transform.position.y;
 
-            if (existingRooms[i].transform.position.x > topRight.x)
-                topRight.x = existingRooms[i].transform.position.x;
-            if (existingRooms[i].transform.position.y > topRight.y)
-                topRight.y = existingRooms[i].transform.position.y;
+            if (dungeonRooms[i].transform.position.x > topRight.x)
+                topRight.x = dungeonRooms[i].transform.position.x;
+            if (dungeonRooms[i].transform.position.y > topRight.y)
+                topRight.y = dungeonRooms[i].transform.position.y;
         }
 
         bottomLeft.x -= ROOM_WIDTH;
@@ -181,7 +182,7 @@ public class DungeonGenerator : MonoBehaviour
     private void AddRoom(DungeonRoom room, Vector3 position, bool generateNewNodes = true)
     {
         var go = Instantiate(room.gameObject, position, Quaternion.identity);
-        existingRooms.Add(go);
+        dungeonRooms.Add(go.GetComponent<DungeonRoom>());
         go.transform.SetParent(transform);
 
         if (!generateNewNodes) return;
@@ -252,9 +253,11 @@ public class DungeonGenerator : MonoBehaviour
         Vector3 eastPos = center + (Vector3.right * ROOM_WIDTH * 2);
         Vector3 westPos = center + (Vector3.left * ROOM_WIDTH * 2);
 
-        for (int i = 0; i < existingRooms.Count; i++)
+        //for (int i = 0; i < existingRooms.Count; i++)
+        for (int i = 0; i < dungeonRooms.Count; i++)
         {
-            var roomPos = existingRooms[i].transform.position;
+            //var roomPos = existingRooms[i].transform.position;
+            var roomPos = dungeonRooms[i].transform.position;
             if (roomPos == northPos)
             {
                 //Debug.Log("Neighboring room found at " + roomPos);
@@ -277,12 +280,12 @@ public class DungeonGenerator : MonoBehaviour
             }
         }
 
-        string text = "Room number " + existingRooms.Count + " has neighbors to the: ";
+        string text = "Room number " + dungeonRooms.Count + " has neighbors to the: ";
         for (int i = 0; i < roomList.Count; i++)
         {
             text += roomList[i].ToString() + ", ";
         }
-        if (roomList.Count == 0) text = "Room number " + existingRooms.Count + " has no neighbors";
+        if (roomList.Count == 0) text = "Room number " + dungeonRooms.Count + " has no neighbors";
         //Debug.Log(text);
 
         return roomList;
@@ -347,10 +350,10 @@ public class DungeonGenerator : MonoBehaviour
         var tempList = new List<DungeonRoom>();
 
         //if the room has entrances in all given directions, add to list
-        for (int i = 0; i < allDungeonRooms.Count; i++)
+        for (int i = 0; i < allRoomPrefabs.Count; i++)
         {
-            if (allDungeonRooms[i].HasAllEntrances(nodes))
-                tempList.Add(allDungeonRooms[i]);
+            if (allRoomPrefabs[i].HasAllEntrances(nodes))
+                tempList.Add(allRoomPrefabs[i]);
         }
 
         return tempList;
@@ -431,9 +434,9 @@ public class DungeonGenerator : MonoBehaviour
     {
         bool occupiedSpaceFound = false;
         //Check existing rooms to see if they occupy the same location as the next spawn location
-        for (int i = 0; i < existingRooms.Count; i++)
+        for (int i = 0; i < dungeonRooms.Count; i++)
         {
-            if (Vector2.Distance(existingRooms[i].transform.position, nextRoomSpawnLocation) < 1)
+            if (Vector2.Distance(dungeonRooms[i].transform.position, nextRoomSpawnLocation) < 1)
             {
                 //There is already a room in this location....
                 //I'll have to add some method later to either close off that hallway, or swap out that room with one to connect it
@@ -473,28 +476,3 @@ public class DungeonGenerator : MonoBehaviour
         }
     }
 }
-
-
-/* Previous method for closing off open nodes
-            else
-            {
-                //Returns the position of where a connecting room would be placed to close this node
-                Vector3 nextEndCapSpawnLocation = GetAdjustedPosition(newNode.nodePosition, newNode.direction);
-
-                //Check if there are any additional nodes surrounding the next spawn location 
-                var neighborNodes = FindNeighborNodes(nextEndCapSpawnLocation);
-
-                //Find all rooms which would neighbor the new room
-                var neighborRooms = FindNeighborRooms(nextEndCapSpawnLocation);
-
-                //Get Room
-                var nextRoom = GetNewDungeonRoom(neighborNodes, neighborRooms, true);
-
-                //Add Room
-                AddRoom(nextRoom, nextEndCapSpawnLocation);
-
-                //Check if there are any new hallway connections after adding this room
-                yield return CheckForConnectingHallways();
-                yield return null;
-            }
-*/

@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerController : MonoBehaviour, IDamageable
+public class PlayerController : MonoBehaviour, IDamageable, IDimensionHandler
 {
     public static PlayerController instance;
 
@@ -15,6 +15,9 @@ public class PlayerController : MonoBehaviour, IDamageable
     public delegate void OnHealthChangeCallback();
     public OnHealthChangeCallback onHealthChange;
     public OnHealthChangeCallback onArmorChange;
+
+    public delegate void OnPlayerDimensionChangeCallback(Dimension newDimension);
+    public OnPlayerDimensionChangeCallback onPlayerDimensionChange;
     #endregion
 
     #region - Components -
@@ -176,7 +179,7 @@ public class PlayerController : MonoBehaviour, IDamageable
     public void OnDamage(int dmg, Dimension dimension)
     {
         if (Time.time < damageCooldown || isInvincible || !isAlive) return;
-        if (dimension != m_currentDimension) return;
+        //if (dimension != m_currentDimension) return;
 
         if (currentArmor > 0)
         {
@@ -279,14 +282,19 @@ public class PlayerController : MonoBehaviour, IDamageable
     private void CycleDimension()
     {
         int i = (int)m_currentDimension + 1;
-        if (i >= System.Enum.GetNames(typeof(Dimension)).Length) i = 0;
-        m_currentDimension = (Dimension)i;
+        if (i >= Enum.GetNames(typeof(Dimension)).Length) i = 0;
+        SetDimension((Dimension)i);
+        //m_currentDimension = (Dimension)i;
         Debug.Log("Cycling to dimension " + m_currentDimension.ToString());
     }
 
     public void SetDimension(Dimension dimension)
     {
         m_currentDimension = dimension;
+        int newLayer = LayerMask.NameToLayer(dimension.ToString());
+        gameObject.layer = newLayer;
+        onPlayerDimensionChange?.Invoke(m_currentDimension);
+        //Debug.Log("Current Layer: " + gameObject.layer);
     }
 
     public void SetSavedValues(int maxHealth, int maxArmor)

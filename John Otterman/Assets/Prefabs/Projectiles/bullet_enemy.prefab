@@ -101,6 +101,7 @@ MonoBehaviour:
   movementSpeed: 15
   poolTag: bullet_enemy
   timeToDespawn: 5
+  playerProjectile: 0
 --- !u!61 &8550783492975888516
 BoxCollider2D:
   m_ObjectHideFlags: 0

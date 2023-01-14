@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2132606282244864102}
   - component: {fileID: 2183349299845374053}
-  m_Layer: 7
+  m_Layer: 6
   m_Name: Cyan Shark Hands
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -91,7 +91,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3238008205338324667}
-  m_Layer: 7
+  m_Layer: 6
   m_Name: Pointer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -126,7 +126,7 @@ GameObject:
   - component: {fileID: 3238008205809395975}
   - component: {fileID: 3238008205809395972}
   - component: {fileID: 3238008205809395971}
-  m_Layer: 7
+  m_Layer: 6
   m_Name: Shark_Standard
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -208,14 +208,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 153084ffc15f9402597e5640428fa8b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  layersToIgnore:
-    serializedVersion: 2
-    m_Bits: 128
+  spriteRenderer: {fileID: 3238008206379811632}
   pointsValue: 50
   m_maxHealth: 10
   maxArmor: 0
   chaseRadius: 17.5
   movementSpeed: 5
+  m_currentDimension: 0
 --- !u!114 &3238008205809395971
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -244,7 +243,7 @@ GameObject:
   - component: {fileID: 3238008206379811634}
   - component: {fileID: 3238008206379811632}
   - component: {fileID: 3238008206379811633}
-  m_Layer: 7
+  m_Layer: 6
   m_Name: GFX
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -345,7 +344,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7563014412800026686}
   - component: {fileID: 1402955140613666382}
-  m_Layer: 7
+  m_Layer: 6
   m_Name: Cyan Shark Hands 2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -428,7 +427,7 @@ GameObject:
   - component: {fileID: 3645672704615876858}
   - component: {fileID: 4912892174309255488}
   - component: {fileID: 3179684829666699568}
-  m_Layer: 7
+  m_Layer: 6
   m_Name: Hands Parent
   m_TagString: Untagged
   m_Icon: {fileID: 0}

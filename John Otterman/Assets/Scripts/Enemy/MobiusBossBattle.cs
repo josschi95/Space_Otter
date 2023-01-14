@@ -144,7 +144,7 @@ public class MobiusBossBattle : MonoBehaviour
 
     private void OnTeleportMobius()
     {
-        if (!mobius.isAlive) return;
+        if (!mobius.IsAlive) return;
         Transform locationToTeleport = teleportationPositions[0];
         float dist = Vector2.Distance(locationToTeleport.position, player.transform.position);
 

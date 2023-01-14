@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Projectile : MonoBehaviour, IPooledObject, IProjectile
+public class Projectile : MonoBehaviour, IPooledObject, IProjectile, IDimensionHandler
 {
     private Rigidbody2D rb;
     private TrailRenderer trail;
@@ -14,14 +14,12 @@ public class Projectile : MonoBehaviour, IPooledObject, IProjectile
     [SerializeField] private float timeToDespawn = 5f;
     [SerializeField] private bool playerProjectile = false;
 
-    private int layerToIgnore;
     private float despawnTimer;
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         trail = GetComponent<TrailRenderer>();
-        layerToIgnore = gameObject.layer;
     }
 
     private void Update()
@@ -43,7 +41,7 @@ public class Projectile : MonoBehaviour, IPooledObject, IProjectile
     public void SetDamage(int dmg, Dimension dimension)
     {
         damage = dmg;
-        this.dimension = dimension;
+        SetDimension(dimension);
     }
 
     public void OnReturnToPool()
@@ -59,7 +57,7 @@ public class Projectile : MonoBehaviour, IPooledObject, IProjectile
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (!isActive) return;
-        if (collision.gameObject.layer == layerToIgnore) return; //Don't collide with other bullets
+        if (collision.gameObject.GetComponent<Projectile>()) return;
 
         var target = collision.gameObject.GetComponent<IDamageable>();
         if (target != null)
@@ -69,11 +67,6 @@ public class Projectile : MonoBehaviour, IPooledObject, IProjectile
             OnReturnToPool();
             return;
         }
-        else if (collision.gameObject.GetComponent<Projectile>())
-        {
-            //This is just to bypass the below check
-            //Destroy each other
-        }
         else if (collision.collider.isTrigger) return;
 
         OnReturnToPool();
@@ -82,5 +75,13 @@ public class Projectile : MonoBehaviour, IPooledObject, IProjectile
     public void OnSceneChange()
     {
         OnReturnToPool();
+    }
+
+    public void SetDimension(Dimension dimension)
+    {
+        this.dimension = dimension;
+        int newLayer = LayerMask.NameToLayer(dimension.ToString());
+        gameObject.layer = newLayer;
+        //Debug.Log("Current Layer: " + gameObject.layer);
     }
 }

@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 143547641}
   - component: {fileID: 143547642}
-  m_Layer: 3
+  m_Layer: 6
   m_Name: crosshair
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -93,7 +93,7 @@ GameObject:
   - component: {fileID: 669216710}
   - component: {fileID: 669216712}
   - component: {fileID: 669216711}
-  m_Layer: 3
+  m_Layer: 6
   m_Name: Item Pickup Radius
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -153,7 +153,7 @@ GameObject:
   - component: {fileID: 1535524329}
   - component: {fileID: 1535524331}
   - component: {fileID: 1535524330}
-  m_Layer: 3
+  m_Layer: 6
   m_Name: GFX
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -254,7 +254,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2000303910}
   - component: {fileID: 2000303911}
-  m_Layer: 3
+  m_Layer: 6
   m_Name: Reticle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -303,7 +303,7 @@ GameObject:
   - component: {fileID: 3927292832664022123}
   - component: {fileID: 186971288}
   - component: {fileID: 2529056929390453826}
-  m_Layer: 3
+  m_Layer: 6
   m_Name: Player
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -390,6 +390,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isInvincible: 0
   movementSpeed: 12
+  m_currentDimension: 0
 --- !u!114 &186971288
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -476,7 +477,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3927292833100329852}
-  m_Layer: 3
+  m_Layer: 6
   m_Name: interactPos
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -506,7 +507,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3927292833744240498}
-  m_Layer: 3
+  m_Layer: 6
   m_Name: Pointer
   m_TagString: Untagged
   m_Icon: {fileID: 0}

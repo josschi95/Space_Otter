@@ -196,6 +196,11 @@ MonoBehaviour:
     edge: {fileID: 8653332750041164307}
   - direction: 1
     edge: {fileID: 6480620268993791312}
+  spriteRenderer: {fileID: 4678528123175189550}
+  dimensionalSprites:
+  - {fileID: 21300000, guid: e0fa170c53c2bd1478d91a6fffb499e5, type: 3}
+  - {fileID: 21300000, guid: f8f4e238582d5d14ab7392eea1ed124d, type: 3}
+  - {fileID: 21300000, guid: c87d94f61e8ada644a48d9f5f3907c2e, type: 3}
 --- !u!1 &4838390883322844386
 GameObject:
   m_ObjectHideFlags: 0

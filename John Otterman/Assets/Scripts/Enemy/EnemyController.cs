@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EnemyController : MonoBehaviour, IDamageable
+public class EnemyController : MonoBehaviour, IDamageable, IDimensionHandler
 {
     public delegate void OnDamageTakenCallback();
     public OnDamageTakenCallback onDamageTaken;
@@ -10,12 +10,13 @@ public class EnemyController : MonoBehaviour, IDamageable
     public delegate void OnEnemyDeathCallback(EnemyController enemy);
     public OnEnemyDeathCallback onEnemyDeath;
 
-    [SerializeField] private LayerMask layersToIgnore;
     public Animator anim { get; private set; }
+    [SerializeField] private SpriteRenderer spriteRenderer;
     private EnemyCombat combat;
 
     // health 
-    public bool isAlive { get; private set; }
+    private bool m_isAlive = true;
+    public bool IsAlive => m_isAlive;
     [SerializeField] private int pointsValue = 50;
     [SerializeField] private int m_maxHealth = 10;
     public int MaxHealth => m_maxHealth;
@@ -42,18 +43,18 @@ public class EnemyController : MonoBehaviour, IDamageable
     public Dimension CurrentDimension => m_currentDimension;
 
     private void Start()
-    {
-        isAlive = true;
-        
-        currentHealth = m_maxHealth;
-        player = GameManager.instance.player.transform;
+    {       
         anim = GetComponentInChildren<Animator>();
         combat = GetComponent<EnemyCombat>();
+        currentHealth = m_maxHealth;
+
+        player = GameManager.instance.player.transform;
+        PlayerController.instance.onPlayerDimensionChange += OnPlayerSwitchDimension;
     }
 
     private void Update()
     {
-        if (!isAlive || !m_canAct) return;
+        if (!m_isAlive || !m_canAct) return;
 
         MoveCharacter();
 
@@ -98,6 +99,24 @@ public class EnemyController : MonoBehaviour, IDamageable
     }
     #endregion
 
+    #region - Dimension Settings -
+    public void OnPlayerSwitchDimension(Dimension dimension)
+    {
+        Color newColor = Color.white;
+        if (dimension == m_currentDimension) newColor.a = 1f;
+        else newColor.a = 0.5f;
+        spriteRenderer.color = newColor;
+    }
+
+    public void SetDimension(Dimension dimension)
+    {
+        m_currentDimension = dimension;
+        int newLayer = LayerMask.NameToLayer(dimension.ToString());
+        gameObject.layer = newLayer;
+        //Debug.Log("Current Layer: " + gameObject.layer);
+    }
+    #endregion
+
     public void SetEnemyProperties(int health, int armor, int pointsValue)
     {
         m_maxHealth = health;
@@ -116,7 +135,7 @@ public class EnemyController : MonoBehaviour, IDamageable
 
     public void OnDamage(int dmg, Dimension dimension)
     {
-        if (!isAlive || dimension != m_currentDimension) return;
+        if (!m_isAlive) return;
 
         GameManager.OnEnemyHit();
 
@@ -154,7 +173,7 @@ public class EnemyController : MonoBehaviour, IDamageable
 
     private void KillEnemy()
     {
-        isAlive = false;
+        m_isAlive = false;
         anim.SetFloat("speed", 0);
         anim.SetFloat("horizontal", 0);
 

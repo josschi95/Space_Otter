@@ -11,8 +11,8 @@ GameObject:
   - component: {fileID: 2920095696309880430}
   - component: {fileID: 4238159161090609018}
   - component: {fileID: 8673891525753221873}
-  m_Layer: 7
-  m_Name: JellyF2F1
+  m_Layer: 6
+  m_Name: GFX
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -115,7 +115,7 @@ GameObject:
   - component: {fileID: 7066296566306951777}
   - component: {fileID: 7066296566306951789}
   - component: {fileID: 7066296566306951788}
-  m_Layer: 7
+  m_Layer: 6
   m_Name: Jelly_Red
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -196,14 +196,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 153084ffc15f9402597e5640428fa8b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  layersToIgnore:
-    serializedVersion: 2
-    m_Bits: 128
+  spriteRenderer: {fileID: 4238159161090609018}
   pointsValue: 50
   m_maxHealth: 10
   maxArmor: 0
   chaseRadius: 20
   movementSpeed: 2
+  m_currentDimension: 0
 --- !u!114 &7066296566306951788
 MonoBehaviour:
   m_ObjectHideFlags: 0

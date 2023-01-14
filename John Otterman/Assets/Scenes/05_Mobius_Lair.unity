@@ -1052,7 +1052,7 @@ Camera:
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 95
+    m_Bits: 2015
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -1321,10 +1321,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pointsValue: 10000
-  maxHealth: 200
+  m_maxHealth: 10
   maxArmor: 20
   chaseRadius: 100
   movementSpeed: 5
+  m_currentDimension: 0
 --- !u!50 &1496080001
 Rigidbody2D:
   serializedVersion: 4

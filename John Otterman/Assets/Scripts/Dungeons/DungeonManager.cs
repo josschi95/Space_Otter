@@ -29,14 +29,14 @@ public class DungeonManager : MonoBehaviour
 
     [SerializeField] private int minEnemiesToSpawn, maxEnemiesToSpawn;
 
-    private Vector3[] roomCenters;
+    private List<DungeonRoom> rooms = new List<DungeonRoom>();
     private List<EnemyController> enemies;
 
     public int enemiesRemaining { get; private set; }
     public int totalEnemyCount { get; private set; }
 
     [SerializeField] private string[] m_lootPoolTags;
-    private float portalSpawnDelayTime = 3;
+    private float portalSpawnDelayTime = 2.5f;
 
     #region - INIT -
     private void Awake()
@@ -65,6 +65,8 @@ public class DungeonManager : MonoBehaviour
     {
         generator.GenerateDungeon(dungeonSizePerLevel[stageIndex]);
 
+        PlayerController.instance.onPlayerDimensionChange += OnDimensionSwitch;
+
         StartCoroutine(WaitForDungeonToBeCreated());
     }
 
@@ -74,12 +76,8 @@ public class DungeonManager : MonoBehaviour
         {
             yield return null;
         }
-
-        roomCenters = new Vector3[generator.existingRooms.Count];
-        for (int i = 0; i < roomCenters.Length; i++)
-        {
-            roomCenters[i] = generator.existingRooms[i].transform.position;
-        }
+        rooms = new List<DungeonRoom>();
+        rooms.AddRange(generator.dungeonRooms);
 
         GenerateEnemies();
     }
@@ -87,14 +85,10 @@ public class DungeonManager : MonoBehaviour
     private void GenerateEnemies()
     {
         if (DoNotSpawn) return;
-        //var rb = PlayerController.instance.gameObject.GetComponent<Rigidbody2D>();
-        //rb.mass = 0.25f;
-        //rb.drag = 0;
-        //PlayerController.instance.ToggleMovement(false);
 
         enemies = new List<EnemyController>();
 
-        for (int i = 0; i < roomCenters.Length; i++)
+        for (int i = 0; i < rooms.Count; i++)
         {
             if (i == 0) continue; //Don't spawn enemies in the first room the player is in
 
@@ -102,7 +96,7 @@ public class DungeonManager : MonoBehaviour
 
             for (int n = 0; n < numToSpawn; n++)
             {
-                Vector3 pos = roomCenters[i];
+                Vector3 pos = rooms[i].transform.position;
                 pos.x += Random.Range(-0.5f, 0.5f) * n;
                 pos.y += Random.Range(-1f, 1f) * n;
 
@@ -126,6 +120,9 @@ public class DungeonManager : MonoBehaviour
             enemies.Add(newEnemy);
             enemiesRemaining++;
             newEnemy.onEnemyDeath += UpdateStageEnemies;
+            newEnemy.SetDimension((Dimension)Random.Range(0, 3)); //Set the enemy to a random dimension
+
+            newEnemy.OnPlayerSwitchDimension(PlayerController.instance.CurrentDimension);
         }
     }
     #endregion
@@ -146,6 +143,14 @@ public class DungeonManager : MonoBehaviour
         onEnemyCountChange?.Invoke();
     }
 
+    private void OnDimensionSwitch(Dimension newDimension)
+    {
+        for (int i = 0; i < rooms.Count; i++)
+        {
+            rooms[i].SetDimensionDisplay(newDimension);
+        }
+    }
+
     private void OnStageComplete()
     {
         PlayerController.instance.SetInvincible(true);
@@ -153,21 +158,20 @@ public class DungeonManager : MonoBehaviour
         if (globalStageIndex != 8)
             GameManager.instance.OnStageClear(globalStageIndex);       
 
-        Vector3 desiredSpawnPosition = roomCenters[0];
-        var dist = Vector2.Distance(roomCenters[0], PlayerController.instance.transform.position);
-        for (int i = 1; i < roomCenters.Length; i++)
+        Vector3 desiredSpawnPosition = rooms[0].transform.position;
+        var dist = Vector2.Distance(rooms[0].transform.position, PlayerController.instance.transform.position);
+        for (int i = 1; i < rooms.Count; i++)
         {
-            var newDist = Vector2.Distance(roomCenters[i], PlayerController.instance.transform.position);
+            var newDist = Vector2.Distance(rooms[i].transform.position, PlayerController.instance.transform.position);
             if (newDist < dist)
             {
-                desiredSpawnPosition = roomCenters[i];
+                desiredSpawnPosition = rooms[i].transform.position;
                 dist = newDist;
             }
         }
         StartCoroutine(PortalSpawnDelay(desiredSpawnPosition));
     }
 
-    
     private IEnumerator PortalSpawnDelay(Vector3 portalPos)
     {
         yield return new WaitForSeconds(portalSpawnDelayTime);
@@ -179,7 +183,15 @@ public class DungeonManager : MonoBehaviour
         int index = Random.Range(0, m_lootPoolTags.Length);
         return m_lootPoolTags[index];
     }
+
+    private void SetZeroGravity()
+    {
+        var rb = PlayerController.instance.gameObject.GetComponent<Rigidbody2D>();
+        rb.mass = 0.25f;
+        rb.drag = 0;
+        PlayerController.instance.ToggleMovement(false);
+    }
 }
 
 public enum World { World_00, World_01, World_02 }
-public enum Dimension { Dimension_01, Dimension_02, Dimension_03 }
+public enum Dimension { Dimension_00, Dimension_01, Dimension_02 }
