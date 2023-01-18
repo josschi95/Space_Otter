@@ -41,11 +41,14 @@ public class EnemyCombat : MonoBehaviour
 
         if (unarmedOverride)
         {
-            activeWeapon = sharkHands.GetComponentInChildren<ActiveWeapon>(); //SharkUnarmed
+            if (sharkHands != null)
+            {
+                activeWeapon = sharkHands.GetComponentInChildren<ActiveWeapon>(); //SharkUnarmed
+            }
         }
         else
         {
-            sharkHands.SetActive(false);
+            if (sharkHands != null) sharkHands.SetActive(false);
 
             var go = ObjectPooler.Spawn(weapon.ItemName, pointer.position, Quaternion.identity);
             go.transform.SetParent(pointer);
@@ -60,8 +63,10 @@ public class EnemyCombat : MonoBehaviour
         magazineSize = weapon.BaseMagazineCapacity;
         roundsInMag = magazineSize;
 
-        if (weapon.Type == WeaponType.Sword) attackRadius = 3;
+        if (controller.Jelly) attackRadius = 0;
+        else if (weapon.Type == WeaponType.Sword) attackRadius = 3;
         else attackRadius = 15;
+
     }
 
     private void Update()
@@ -89,7 +94,7 @@ public class EnemyCombat : MonoBehaviour
         if (weapon.Type == WeaponType.Sword) OnSwingWeapon();
         else OnFireWeapon();
 
-        activeWeapon.PlayEffects(); //Muzzle Flash
+        activeWeapon?.PlayEffects(); //Muzzle Flash
         AudioManager.PlayEnemyClip(weapon.AttackSFX);
         attackCooldownTimer = Time.time + (1 / attackRate);
     }
@@ -110,12 +115,16 @@ public class EnemyCombat : MonoBehaviour
 
     private void OnSwingWeapon()
     {
+        if (activeWeapon == null)
+        {
+            return;
+        }
         var pos = activeWeapon.Muzzle.position + (Vector3.right * controller.anim.GetFloat("horizontal"));
         Collider2D[] colls = Physics2D.OverlapBoxAll(pos, new Vector2(3, 5), 0);
         for (int i = 0; i < colls.Length; i++)
         {
-            if (colls[i].gameObject == gameObject) continue;
-            colls[i].GetComponent<IDamageable>()?.OnDamagePlayer(weaponDamage, controller.CurrentDimension);
+            if (colls[i].gameObject == gameObject || colls[i].gameObject.layer != gameObject.layer) continue;
+            colls[i].GetComponent<IDamageable>()?.OnDamagePlayer(weaponDamage);
         }
     }
 

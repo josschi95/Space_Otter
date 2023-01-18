@@ -339,10 +339,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   spriteRenderer: {fileID: 6090933006331472311}
   pointsValue: 50
-  m_maxHealth: 10
+  m_maxHealth: 8
   maxArmor: 0
+  m_damageOnContact: 0
   chaseRadius: 17.5
   movementSpeed: 5
+  jelly: 0
   m_currentDimension: 0
 --- !u!114 &6090933006029472644
 MonoBehaviour:

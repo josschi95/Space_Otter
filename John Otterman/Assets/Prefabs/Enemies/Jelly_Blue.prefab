@@ -32,6 +32,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 5276427061217008086}
+  - {fileID: 4144494985232575598}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -95,11 +96,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spriteRenderer: {fileID: 8252557483379159297}
-  pointsValue: 50
-  m_maxHealth: 10
+  pointsValue: 25
+  m_maxHealth: 4
   maxArmor: 0
+  m_damageOnContact: 1
   chaseRadius: 20
   movementSpeed: 2
+  jelly: 1
   m_currentDimension: 0
 --- !u!114 &4393248049690192005
 MonoBehaviour:
@@ -113,11 +116,41 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d7d6e4b770768744f9fbdeac47d64fba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attackRadius: 17.5
+  attackRadius: 0
   damageModifier: 0
-  defaultWeapon: {fileID: 0}
+  defaultWeapon: {fileID: 11400000, guid: 36f0aefb56d96194aa9b30c50a02af3d, type: 2}
   sharkHands: {fileID: 0}
-  unarmedOverride: 0
+  unarmedOverride: 1
+--- !u!1 &4016719907294785044
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4144494985232575598}
+  m_Layer: 6
+  m_Name: Pointer
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4144494985232575598
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4016719907294785044}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1138264856637047457}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5971629303045269894
 GameObject:
   m_ObjectHideFlags: 0

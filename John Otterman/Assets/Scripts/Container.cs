@@ -12,9 +12,9 @@ public class Container : MonoBehaviour, IDamageable, IPooledObject
     {
         this.dimension = dimension;
     }
-    public void OnDamage(int dmg, Dimension dimension)
+    public void OnDamage(int dmg)
     {
-        if (!isActive || dimension != this.dimension) return;
+        if (!isActive) return;
 
         //Drops an item
         string tag = DungeonManager.instance.GetLootTag();
@@ -23,14 +23,14 @@ public class Container : MonoBehaviour, IDamageable, IPooledObject
         OnReturnToPool();
     }
 
-    public void OnDamagePlayer(int dmg, Dimension dimension)
+    public void OnDamagePlayer(int dmg)
     {
-        OnDamage(dmg, dimension);
+        OnDamage(dmg);
     }
 
-    public void OnDamageEnemy(int dmg, Dimension dimension)
+    public void OnDamageEnemy(int dmg)
     {
-        OnDamage(dmg, dimension);
+        OnDamage(dmg);
     }
 
     public void OnObjectSpawn()

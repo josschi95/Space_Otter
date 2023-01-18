@@ -58,11 +58,12 @@ public class ObjectPooler : MonoBehaviour
 
     private void OnSceneChanged()
     {
-        foreach (KeyValuePair<string, Pool> pool in poolDictionary)
+        for (int i = 0; i < transform.childCount; i++)
         {
-            for (int i = pool.Value.usedList.Count -1; i >= 0; i--)
+            var child = transform.GetChild(i);
+            if (child.gameObject.activeSelf)
             {
-                pool.Value.usedList[i].GetComponent<IPooledObject>()?.OnSceneChange();
+                child.GetComponent<IPooledObject>()?.OnSceneChange();
             }
         }
     }

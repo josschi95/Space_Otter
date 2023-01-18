@@ -150,9 +150,9 @@ public class DungeonGenerator : MonoBehaviour
 
         dungeonCreated = true;
 
-        //nodesToRemove.Clear();
-        //closedNodes.Clear();
-        Debug.Log("Dungeon Generation Complete");
+        nodesToRemove.Clear();
+        closedNodes.Clear();
+        //Debug.Log("Dungeon Generation Complete");
 
         for (int i = 0; i < dungeonRooms.Count; i++)
         {

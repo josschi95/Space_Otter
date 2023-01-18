@@ -16,15 +16,15 @@ public class ExplosiveBarrel : MonoBehaviour, IDamageable, IPooledObject
         explosion = GetComponentInChildren<ParticleSystem>();
     }
 
-    public void OnDamage(int dmg, Dimension dimension)
+    public void OnDamage(int dmg)
     {
-        if (!isActive || dimension != this.dimension) return;
+        if (!isActive) return;
 
         Collider2D[] colls = Physics2D.OverlapCircleAll(transform.position, explosionRadius);
         for (int i = 0; i < colls.Length; i++)
         {
             if (colls[i].gameObject == gameObject) continue;
-            colls[i].GetComponent<IDamageable>()?.OnDamage(damage, dimension);
+            colls[i].GetComponent<IDamageable>()?.OnDamage(damage);
         }
 
         //I would like an explosion
@@ -34,14 +34,14 @@ public class ExplosiveBarrel : MonoBehaviour, IDamageable, IPooledObject
         explosion.Play();
     }
 
-    public void OnDamagePlayer(int dmg, Dimension dimension)
+    public void OnDamagePlayer(int dmg)
     {
-        OnDamage(dmg, dimension);
+        OnDamage(dmg);
     }
 
-    public void OnDamageEnemy(int dmg, Dimension dimension)
+    public void OnDamageEnemy(int dmg)
     {
-        OnDamage(dmg, dimension);
+        OnDamage(dmg);
     }
 
     private void OnParticleSystemStopped()

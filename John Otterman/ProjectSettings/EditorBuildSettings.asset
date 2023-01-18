@@ -26,7 +26,4 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/06_Credits.unity
     guid: 13460aaba426a3e4da8542d551b2ca75
-  - enabled: 1
-    path: Assets/Scenes/Practice Range.unity
-    guid: 2cda990e2423bbf4892e6590ba056729
   m_configObjects: {}

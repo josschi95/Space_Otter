@@ -5,7 +5,8 @@ using UnityEngine.SceneManagement;
 
 public class HubPortal : MonoBehaviour
 {
-    [SerializeField] private bool morbiusPortal = false;
+    [SerializeField] private bool bossPortal = false;
+    [SerializeField] private int bossSceneIndex = 5;
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -13,9 +14,9 @@ public class HubPortal : MonoBehaviour
 
         if (collision.gameObject.GetComponent<PlayerController>())
         {
-            if (morbiusPortal)
+            if (bossPortal)
             {
-                SceneManager.LoadScene(5);
+                SceneManager.LoadScene(bossSceneIndex);
                 return;
             }
             PlayerController.instance.ToggleMovement(false);

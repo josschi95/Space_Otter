@@ -61,6 +61,7 @@ public class Weapon : Item
     public int MagazineCapacityIncreasePerTier => m_magazineCapIncreasePerTier;
     public int AmmoCapIncreasePerTier => m_ammoCapIncreasePerTier;
 
+    #region - Stat Values -
     public int GetDamage(int tier)
     {
         return m_baseDamage + (m_damageIncreasePerTier * (tier - 1));
@@ -71,15 +72,16 @@ public class Weapon : Item
         return m_baseAttackRate * (1 + (m_attackRateIncreasePerTier * (tier - 1)));
     }
 
-    public int GetAmmoCapacity(int tier)
-    {
-        return m_baseAmmoCapacity * (1 + (m_ammoCapIncreasePerTier * (tier - 1)));
-    }
-
     public int GetMagazineCapacity(int tier)
     {
         return m_baseMagazineCapacity * (1 + (m_magazineCapIncreasePerTier * (tier - 1)));
     }
+
+    public int GetAmmoCapacity(int tier)
+    {
+        return m_baseAmmoCapacity * (1 + (m_ammoCapIncreasePerTier * (tier - 1)));
+    }
+    #endregion
 
     #region - Upgrade Costs -
     public int GetDamageUpgradeCost(int currentTier)
@@ -92,14 +94,14 @@ public class Weapon : Item
         return Mathf.RoundToInt((1 + currentTier) * 100 * m_attackRateUpgradeCostMod);
     }
 
-    public int GetAmmoCapUpgradeCost(int currentTier)
-    {
-        return Mathf.RoundToInt((1 + currentTier) * 100 * m_ammoCapacityUpgradeCostMod);
-    }
-
     public int GetMagazineUpgradeCost(int currentTier)
     {
         return Mathf.RoundToInt((1 + currentTier) * 100 * m_magazineCapacityUpgradeCostMost);
+    }
+
+    public int GetAmmoCapUpgradeCost(int currentTier)
+    {
+        return Mathf.RoundToInt((1 + currentTier) * 100 * m_ammoCapacityUpgradeCostMod);
     }
     #endregion
 }

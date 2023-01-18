@@ -404,54 +404,63 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   TESTING: 0
+  portalGun:
+    weapon: {fileID: 11400000, guid: 6008ad7c624c9a04a95054068dab1930, type: 2}
+    roundsInMagazine: 1
+    magazineCapacity: 1
+    damage_Tier: 1
+    attackRate_Tier: 1
+    ammoCapacity_Tier: 1
+    magazineCapacity_Tier: 1
+    isUnlocked: 1
   m_playerWeapons:
   - weapon: {fileID: 11400000, guid: 185885dccae19464486e1765c0d516ca, type: 2}
     roundsInMagazine: 0
     magazineCapacity: 0
-    damageTier: 1
-    attackRateTier: 1
-    ammoCapacityTier: 1
-    magazineCapacityTier: 1
+    damage_Tier: 1
+    attackRate_Tier: 1
+    ammoCapacity_Tier: 1
+    magazineCapacity_Tier: 1
     isUnlocked: 1
   - weapon: {fileID: 11400000, guid: 38636b5a5961eb440a73066b155f16c0, type: 2}
-    roundsInMagazine: 0
-    magazineCapacity: 0
-    damageTier: 1
-    attackRateTier: 1
-    ammoCapacityTier: 1
-    magazineCapacityTier: 1
+    roundsInMagazine: 16
+    magazineCapacity: 16
+    damage_Tier: 1
+    attackRate_Tier: 1
+    ammoCapacity_Tier: 1
+    magazineCapacity_Tier: 1
     isUnlocked: 1
   - weapon: {fileID: 11400000, guid: 68da1607a30d2d24cb8fb046334bc64c, type: 2}
-    roundsInMagazine: 0
-    magazineCapacity: 0
-    damageTier: 1
-    attackRateTier: 1
-    ammoCapacityTier: 1
-    magazineCapacityTier: 1
+    roundsInMagazine: 12
+    magazineCapacity: 12
+    damage_Tier: 1
+    attackRate_Tier: 1
+    ammoCapacity_Tier: 1
+    magazineCapacity_Tier: 1
     isUnlocked: 0
   - weapon: {fileID: 11400000, guid: a7df70d73238c40429ea7a20b274ded9, type: 2}
-    roundsInMagazine: 0
-    magazineCapacity: 0
-    damageTier: 1
-    attackRateTier: 1
-    ammoCapacityTier: 1
-    magazineCapacityTier: 1
+    roundsInMagazine: 50
+    magazineCapacity: 50
+    damage_Tier: 1
+    attackRate_Tier: 1
+    ammoCapacity_Tier: 1
+    magazineCapacity_Tier: 1
     isUnlocked: 0
   - weapon: {fileID: 11400000, guid: f45f89a59cc4bff438ee9b51d9d28afc, type: 2}
-    roundsInMagazine: 0
-    magazineCapacity: 0
-    damageTier: 1
-    attackRateTier: 1
-    ammoCapacityTier: 1
-    magazineCapacityTier: 1
+    roundsInMagazine: 36
+    magazineCapacity: 36
+    damage_Tier: 1
+    attackRate_Tier: 1
+    ammoCapacity_Tier: 1
+    magazineCapacity_Tier: 1
     isUnlocked: 0
   - weapon: {fileID: 11400000, guid: 7c9cb192396513e4390aa1703a8865d6, type: 2}
-    roundsInMagazine: 0
-    magazineCapacity: 0
-    damageTier: 1
-    attackRateTier: 1
-    ammoCapacityTier: 1
-    magazineCapacityTier: 1
+    roundsInMagazine: 500
+    magazineCapacity: 500
+    damage_Tier: 1
+    attackRate_Tier: 1
+    ammoCapacity_Tier: 1
+    magazineCapacity_Tier: 1
     isUnlocked: 0
   currentActiveWeapon: {fileID: 0}
   m_weaponAmmoCount: 

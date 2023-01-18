@@ -31,6 +31,9 @@ public class UIManager : MonoBehaviour
     [SerializeField] private Image[] healthPips;
     [SerializeField] private Image[] emptyArmorPips;
     [SerializeField] private Image[] armorPips;
+    [SerializeField] private Image[] weaponSlots;
+    [SerializeField] private Sprite[] lockedWeaponsSprites;
+    [SerializeField] private Sprite[] unlockedWeaponSprites;
     [SerializeField] private Text magCount, ammoCount;
 
     [Header("PauseMenu")]
@@ -82,6 +85,7 @@ public class UIManager : MonoBehaviour
         player.onHealthChange += OnHealthChange;
         player.onArmorChange += OnArmorChange;
 
+        player.combat.onNewWeaponUnlocked += UpdateWeaponSlots;
         player.combat.onNewWeaponEquipped += UpdateWeaponDisplay;
         player.combat.onWeaponReload += DisplayWeaponReload;
 
@@ -251,10 +255,30 @@ public class UIManager : MonoBehaviour
             magCount.gameObject.SetActive(false);
             ammoCount.gameObject.SetActive(false);
         }
+        else if (playerWeapon.weapon.ItemName == "Portal Gun")
+        {
+            magCount.gameObject.SetActive(false);
+            ammoCount.gameObject.SetActive(false);
+        }
         else
         {
             magCount.gameObject.SetActive(true);
             ammoCount.gameObject.SetActive(type != WeaponType.MiniGun);
+        }
+    }
+
+    private void UpdateWeaponSlots()
+    {
+        for (int i = 0; i < weaponSlots.Length; i++)
+        {
+            if (player.combat.PlayerWeapons[i].isUnlocked)
+            {
+                weaponSlots[i].sprite = unlockedWeaponSprites[i];
+            }
+            else
+            {
+                weaponSlots[i].sprite = lockedWeaponsSprites[i];
+            }
         }
     }
 

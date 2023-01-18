@@ -21,12 +21,15 @@ public class EnemyController : MonoBehaviour, IDamageable, IDimensionHandler
     [SerializeField] private int m_maxHealth = 10;
     public int MaxHealth => m_maxHealth;
     [SerializeField] private int maxArmor;
+    [SerializeField] private bool m_damageOnContact = false;
     public int currentHealth { get; private set; }
     public int currentArmor { get; private set; }
 
     [Space]
     [SerializeField] private float chaseRadius = 20f;
     [SerializeField] private float movementSpeed = 5f;
+    [SerializeField] private bool jelly = false;
+    public bool Jelly => jelly;
 
     public float distanceToPlayer { get; private set; }
     public float angleToPlayer { get; private set; }
@@ -39,6 +42,8 @@ public class EnemyController : MonoBehaviour, IDamageable, IDimensionHandler
 
     private Transform player;
 
+    private float dimensionSwapCooldown = 0.5f;
+    private float lastDimensionSwap;
     [SerializeField] private Dimension m_currentDimension;
     public Dimension CurrentDimension => m_currentDimension;
 
@@ -67,7 +72,7 @@ public class EnemyController : MonoBehaviour, IDamageable, IDimensionHandler
 
         Vector2 directionToPlayer = (player.position - transform.position).normalized;
         angleToPlayer = Mathf.Atan2(directionToPlayer.y, directionToPlayer.x) * Mathf.Rad2Deg;
-        combat.activeWeapon.FlipSprite(!(angleToPlayer > -90 && angleToPlayer < 90));
+        combat.activeWeapon?.FlipSprite(!(angleToPlayer > -90 && angleToPlayer < 90));
 
         Vector2 movement = Vector2.MoveTowards(transform.position, player.transform.position, movementSpeed * Time.deltaTime);
 
@@ -89,8 +94,15 @@ public class EnemyController : MonoBehaviour, IDamageable, IDimensionHandler
         if (facingDirection.x > 0 && movement.x < 0) speed *= -1;
         else if (facingDirection.x < 0 && movement.x > 0) speed *= -1;
 
-        anim.SetFloat("speed", speed);
-        anim.SetFloat("horizontal", facingDirection.x);
+        if (jelly)
+        {
+            spriteRenderer.flipX = speed > 0;
+        }
+        else
+        {
+            anim.SetFloat("speed", speed);
+            anim.SetFloat("horizontal", facingDirection.x);
+        }
     }
 
     public void PauseCharacter()
@@ -104,36 +116,31 @@ public class EnemyController : MonoBehaviour, IDamageable, IDimensionHandler
     {
         Color newColor = Color.white;
         if (dimension == m_currentDimension) newColor.a = 1f;
-        else newColor.a = 0.5f;
+        else newColor.a = 0.25f;
+
         spriteRenderer.color = newColor;
     }
 
     public void SetDimension(Dimension dimension)
     {
+        if (lastDimensionSwap > Time.time) return;
+
         m_currentDimension = dimension;
         int newLayer = LayerMask.NameToLayer(dimension.ToString());
         gameObject.layer = newLayer;
-        //Debug.Log("Current Layer: " + gameObject.layer);
+        OnPlayerSwitchDimension(PlayerController.instance.CurrentDimension);
+
+        lastDimensionSwap = Time.time + dimensionSwapCooldown;
+    }
+
+    public Dimension GetDimension()
+    {
+        return m_currentDimension;
     }
     #endregion
 
-    public void SetEnemyProperties(int health, int armor, int pointsValue)
-    {
-        m_maxHealth = health;
-        currentHealth = m_maxHealth;
-
-        maxArmor = armor;
-        currentArmor = maxArmor;
-
-        this.pointsValue = pointsValue;
-    }
-
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        //collision.gameObject.GetComponent<PlayerController>()?.OnDamage(1);
-    }
-
-    public void OnDamage(int dmg, Dimension dimension)
+    #region - Health -
+    public void OnDamage(int dmg)
     {
         if (!m_isAlive) return;
 
@@ -161,14 +168,14 @@ public class EnemyController : MonoBehaviour, IDamageable, IDimensionHandler
         onDamageTaken?.Invoke();
     }
 
-    public void OnDamagePlayer(int dmg, Dimension dimension)
+    public void OnDamagePlayer(int dmg)
     {
         //Return, no friendly fire
     }
 
-    public void OnDamageEnemy(int dmg, Dimension dimension)
+    public void OnDamageEnemy(int dmg)
     {
-        OnDamage(dmg, dimension);
+        OnDamage(dmg);
     }
 
     private void KillEnemy()
@@ -190,6 +197,23 @@ public class EnemyController : MonoBehaviour, IDamageable, IDimensionHandler
         DropItem();
 
         onEnemyDeath?.Invoke(this);
+    }
+    #endregion
+
+    public void SetEnemyProperties(int health, int armor, int pointsValue)
+    {
+        m_maxHealth = health;
+        currentHealth = m_maxHealth;
+
+        maxArmor = armor;
+        currentArmor = maxArmor;
+
+        this.pointsValue = pointsValue;
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (m_damageOnContact) collision.gameObject.GetComponent<PlayerController>()?.OnDamage(1);
     }
 
     private void DropItem()

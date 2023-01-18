@@ -30,7 +30,7 @@ MonoBehaviour:
   m_baseAmmoCapacity: 100
   m_damageIncreasePerTier: 1
   m_attackRateIncreasePerTier: 0.5
-  m_magazineCapIncreasePerTier: 5
+  m_magazineCapIncreasePerTier: 10
   m_ammoCapIncreasePerTier: 50
   m_damageUpgradeCostMod: 2
   m_attackRateUpgradeCostMod: 2

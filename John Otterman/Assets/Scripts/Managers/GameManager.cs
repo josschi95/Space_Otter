@@ -8,8 +8,6 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
 
-
-
     public delegate void OnPlayerClamsChangeCallback();
     public OnPlayerClamsChangeCallback onClamsChange;
 
@@ -17,7 +15,6 @@ public class GameManager : MonoBehaviour
     public OnPlayerScoreChangeCallback onScoreChange;
 
     public PlayerController player { get; private set; }
-
 
     public JSONSaving saveSystem { get; private set; }
 
@@ -70,7 +67,7 @@ public class GameManager : MonoBehaviour
         onScoreChange?.Invoke();
         MergeClams();
 
-        //if (scene.buildIndex > 0) ObjectPooler.OnSceneChange();
+        if (scene.buildIndex > 0) ObjectPooler.OnSceneChange();
         AudioManager.SetTheme(scene.buildIndex);
         UIManager.ToggleHUD(scene.buildIndex >= 1 && scene.buildIndex <= 5);
 
@@ -119,6 +116,11 @@ public class GameManager : MonoBehaviour
     #region - Player Clams -
     public static void OnClamsGained(int clams)
     {
+        if (DungeonManager.instance == null)
+        {
+            instance.playerClams += clams;
+            return;
+        }
         instance.clamsGainedOnCurrentRun += clams;
         instance.onClamsChange?.Invoke();
     }
@@ -155,6 +157,8 @@ public class GameManager : MonoBehaviour
 
     public void OnStageClear(int stage)
     {
+        if (stage >= m_clearedStages.Length) return;
+
         m_clearedStages[stage] = true;
         //Debug.Log("Global Stage Index " + stage + " is cleared");
     }
@@ -196,6 +200,14 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public void LockAll()
+    {
+        for (int i = 0; i < m_clearedStages.Length; i++)
+        {
+            m_clearedStages[i] = false;
+        }
+    }
+
     public void SetSavedValues(int clams, bool[] clearedStages, int[] highScores)
     {
         playerClams = clams;
@@ -208,6 +220,21 @@ public class GameManager : MonoBehaviour
         for (int i = 0; i < m_stageHighScores.Length; i++)
         {
             m_stageHighScores[i] = highScores[i];
+        }
+    }
+
+    public void OnResetValues()
+    {
+        playerClams = 0;
+
+        for (int i = 0; i < m_clearedStages.Length; i++)
+        {
+            m_clearedStages[i] = false;
+        }
+
+        for (int i = 0; i < m_stageHighScores.Length; i++)
+        {
+            m_stageHighScores[i] = 0;
         }
     }
 }

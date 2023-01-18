@@ -15,7 +15,6 @@ public class PlayerData
     public bool[] stagesCleared;
     public int[] stageHighScores;
 
-    public int[] playerAmmoCount;
     public PlayerWeapon[] playerWeaponData;
 
     public PlayerData(PlayerCombat combat)
@@ -41,12 +40,6 @@ public class PlayerData
             stageHighScores[i] = scoreList[i];
         }
 
-        playerAmmoCount = new int[6];
-        for (int i = 0; i < playerAmmoCount.Length; i++)
-        {
-            playerAmmoCount[i] = combat.WeaponAmmoCount[i];
-        }
-
         playerWeaponData = new PlayerWeapon[6];
         for (int i = 0; i < playerWeaponData.Length; i++)
         {
@@ -56,12 +49,11 @@ public class PlayerData
             playerWeaponData[i] = new PlayerWeapon(combat.PlayerWeapons[i].weapon);
 
             playerWeaponData[i].isUnlocked = combat.PlayerWeapons[i].isUnlocked;
-            playerWeaponData[i].roundsInMagazine = combat.PlayerWeapons[i].roundsInMagazine;
 
-            playerWeaponData[i].damageTier = combat.PlayerWeapons[i].damageTier;
-            playerWeaponData[i].attackRateTier = combat.PlayerWeapons[i].attackRateTier;
-            playerWeaponData[i].ammoCapacityTier = combat.PlayerWeapons[i].ammoCapacityTier;
-            playerWeaponData[i].magazineCapacityTier = combat.PlayerWeapons[i].magazineCapacityTier;
+            playerWeaponData[i].damage_Tier = combat.PlayerWeapons[i].damage_Tier;
+            playerWeaponData[i].attackRate_Tier = combat.PlayerWeapons[i].attackRate_Tier;
+            playerWeaponData[i].ammoCapacity_Tier = combat.PlayerWeapons[i].ammoCapacity_Tier;
+            playerWeaponData[i].magazineCapacity_Tier = combat.PlayerWeapons[i].magazineCapacity_Tier;
         }
     }
 }

@@ -10,14 +10,14 @@ TagManager:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - Actors
+  - 
   - Water
   - UI
-  - Bullet
-  - Enemies
   - Dimension_00
   - Dimension_01
   - Dimension_02
+  - 
+  - 
   - 
   - 
   - 

@@ -251,22 +251,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 143547640, guid: 1c9d978b6424f6a48bbd38430a3efcad, type: 3}
-      propertyPath: m_Layer
-      value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 669216709, guid: 1c9d978b6424f6a48bbd38430a3efcad, type: 3}
-      propertyPath: m_Layer
-      value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 1535524328, guid: 1c9d978b6424f6a48bbd38430a3efcad, type: 3}
-      propertyPath: m_Layer
-      value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 2000303908, guid: 1c9d978b6424f6a48bbd38430a3efcad, type: 3}
-      propertyPath: m_Layer
-      value: 6
-      objectReference: {fileID: 0}
     - target: {fileID: 3927292832664022120, guid: 1c9d978b6424f6a48bbd38430a3efcad, type: 3}
       propertyPath: m_RootOrder
       value: 5
@@ -314,18 +298,6 @@ PrefabInstance:
     - target: {fileID: 3927292832664022121, guid: 1c9d978b6424f6a48bbd38430a3efcad, type: 3}
       propertyPath: m_Name
       value: Player
-      objectReference: {fileID: 0}
-    - target: {fileID: 3927292832664022121, guid: 1c9d978b6424f6a48bbd38430a3efcad, type: 3}
-      propertyPath: m_Layer
-      value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 3927292833100329853, guid: 1c9d978b6424f6a48bbd38430a3efcad, type: 3}
-      propertyPath: m_Layer
-      value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 3927292833744240499, guid: 1c9d978b6424f6a48bbd38430a3efcad, type: 3}
-      propertyPath: m_Layer
-      value: 6
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1c9d978b6424f6a48bbd38430a3efcad, type: 3}
@@ -1215,14 +1187,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1922868338, guid: 34685e452062c56498894f15b29765b9, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 413583147673535713, guid: 34685e452062c56498894f15b29765b9, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7530510873117261557, guid: 34685e452062c56498894f15b29765b9, type: 3}
-      propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8072629873849525967, guid: 34685e452062c56498894f15b29765b9, type: 3}

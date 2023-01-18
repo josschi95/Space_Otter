@@ -5,6 +5,7 @@ using UnityEngine;
 public class PlayerCombat : MonoBehaviour
 {
     public delegate void OnWeaponChangeCallback();
+    public OnWeaponChangeCallback onNewWeaponUnlocked;
     public OnWeaponChangeCallback onNewWeaponEquipped;
     public OnWeaponChangeCallback onWeaponReload;
 
@@ -12,21 +13,26 @@ public class PlayerCombat : MonoBehaviour
 
     private Transform pointer;
     private Animator anim;
+    [SerializeField] private PlayerWeapon portalGun;
     [SerializeField] private PlayerWeapon[] m_playerWeapons;
     public PlayerWeapon[] PlayerWeapons => m_playerWeapons;
 
     //Attacking
     public PlayerWeapon currentWeapon { get; private set; }
     [HideInInspector] public ActiveWeapon currentActiveWeapon; //This is to reference the gameObject
+    private int currentWeaponIndex;
 
     private int weaponDamage = 1;
     private float attackRate = 5;
     private float attackCooldownTimer;
 
+    private float portalCooldown = 0.5f;
+    private float timeOfNextPortal;
+
     [SerializeField] private int[] m_weaponAmmoCount;
     public int[] WeaponAmmoCount => m_weaponAmmoCount;
 
-    private int[] weaponMaxAmmoCapacity = { 0, 0, 0, 0, 0, 0 };
+    private int[] weaponMaxAmmoCapacity;
 
     public bool isReloading { get; private set; }
     private bool canAttack = true;
@@ -50,14 +56,13 @@ public class PlayerCombat : MonoBehaviour
     {
         for (int i = 0; i < m_playerWeapons.Length; i++)
         {
-            m_playerWeapons[i].magazineCapacity = m_playerWeapons[i].weapon.GetMagazineCapacity(m_playerWeapons[i].magazineCapacityTier);
-            weaponMaxAmmoCapacity[i] = m_playerWeapons[i].weapon.GetAmmoCapacity(m_playerWeapons[i].ammoCapacityTier);
-
-            if (TESTING) OnGainAmmo(100, m_playerWeapons[i].weapon.Type);
+            m_playerWeapons[i].magazineCapacity = m_playerWeapons[i].weapon.GetMagazineCapacity(m_playerWeapons[i].magazineCapacity_Tier);
+            weaponMaxAmmoCapacity[i] = m_playerWeapons[i].weapon.GetAmmoCapacity(m_playerWeapons[i].ammoCapacity_Tier);
             OnReloadComplete(m_playerWeapons[i]);
         }
 
         OnNewWeaponEquipped(m_playerWeapons[0]);
+        currentWeaponIndex = 0;
     }
 
     //Refills all weapons on a scene change
@@ -65,7 +70,7 @@ public class PlayerCombat : MonoBehaviour
     {
         for (int i = 0; i < m_playerWeapons.Length; i++)
         {
-            m_playerWeapons[i].roundsInMagazine = m_playerWeapons[i].weapon.GetMagazineCapacity(m_playerWeapons[i].ammoCapacityTier);
+            m_playerWeapons[i].roundsInMagazine = m_playerWeapons[i].weapon.GetMagazineCapacity(m_playerWeapons[i].magazineCapacity_Tier);
             m_weaponAmmoCount[i] = weaponMaxAmmoCapacity[i];
         }
     }
@@ -76,13 +81,58 @@ public class PlayerCombat : MonoBehaviour
         this.canAttack = canAttack;
     }
 
-    public void OnSwapWeapons(int weaponSlot)
+    #region - Weapon Swapping -
+    public void CycleWeapons(float cycleDirection)
     {
-        int index = weaponSlot - 1;
+        int newIndex = currentWeaponIndex;
+        int indexModifier = Mathf.RoundToInt(cycleDirection);
+        newIndex += indexModifier;
 
-        if (!m_playerWeapons[index].isUnlocked) return;
+        if (newIndex >= 6) newIndex = -1;
+        else if (newIndex <= -2) newIndex = 5;
 
+        while(OnSwapWeapons(newIndex) == false)
+        {
+            newIndex += indexModifier;
+            if (newIndex >= 6) newIndex = -1;
+            else if (newIndex <= -2) newIndex = 5;
+        }
+    }
+
+    public void OnSwapToPortalGun()
+    {
+        if (isReloading) OnReloadInterrupt();
+
+        if (currentActiveWeapon != null)
+        {
+            ObjectPooler.Return(currentWeapon.weapon.ItemName + "_player", currentActiveWeapon.gameObject);
+        }
+
+        currentWeapon = portalGun;
+        attackRate = currentWeapon.weapon.GetAttackRate(currentWeapon.attackRate_Tier);
+        weaponDamage = currentWeapon.weapon.GetDamage(currentWeapon.damage_Tier);
+
+        var go = ObjectPooler.Spawn(currentWeapon.weapon.ItemName + "_player", pointer.position, pointer.rotation);
+
+        currentActiveWeapon = go.GetComponent<ActiveWeapon>();
+        go.transform.SetParent(pointer);
+        onNewWeaponEquipped?.Invoke();
+    }
+
+    public bool OnSwapWeapons(int index)
+    {
+        if (index == -1)
+        {
+            currentWeaponIndex = index;
+            OnSwapToPortalGun();
+            return true;
+        }
+
+        if (!m_playerWeapons[index].isUnlocked) return false;
+
+        currentWeaponIndex = index;
         OnNewWeaponEquipped(m_playerWeapons[index]);
+        return true;
     }
 
     public void OnNewWeaponEquipped(PlayerWeapon newWeapon)
@@ -96,8 +146,8 @@ public class PlayerCombat : MonoBehaviour
 
         currentWeapon = newWeapon;
 
-        attackRate = currentWeapon.weapon.GetAttackRate(currentWeapon.attackRateTier);
-        weaponDamage = currentWeapon.weapon.GetDamage(currentWeapon.damageTier);
+        attackRate = currentWeapon.weapon.GetAttackRate(currentWeapon.attackRate_Tier);
+        weaponDamage = currentWeapon.weapon.GetDamage(currentWeapon.damage_Tier);
 
         var go = ObjectPooler.Spawn(newWeapon.weapon.ItemName + "_player", pointer.position, pointer.rotation);
 
@@ -110,15 +160,28 @@ public class PlayerCombat : MonoBehaviour
         else AudioManager.PlayClip("gun_reload");
         onNewWeaponEquipped?.Invoke();
     }
+    #endregion
 
     public void OnAttack()
     {
         if (attackCooldownTimer > Time.time || !canAttack || isReloading || Time.timeScale == 0) return;
 
-        if (currentWeapon.weapon.Type == WeaponType.Sword) OnSwingWeapon();
+        if (currentWeapon == portalGun) OnPortalGunUse();
+        else if (currentWeapon.weapon.Type == WeaponType.Sword) OnSwingWeapon();
         else OnProjectileAttack();
+    }
 
-        attackCooldownTimer = Time.time + (1 / attackRate);
+    private void OnPortalGunUse()
+    {
+        if (timeOfNextPortal > Time.time) return;
+        PlayerController.instance.onNewPortal?.Invoke();
+
+        var portalRot = Quaternion.Euler(0, 0, pointer.rotation.eulerAngles.z + 90);
+        var portal = ObjectPooler.Spawn(currentWeapon.weapon.ProjectilePoolTag, currentActiveWeapon.Muzzle.position, portalRot);
+        portal.GetComponent<PlayerPortal>()?.SetDimension(PlayerController.instance.CurrentDimension);
+        currentActiveWeapon.PlayEffects(); //Muzzle Flash
+
+        timeOfNextPortal = Time.time + portalCooldown;
     }
 
     private void OnProjectileAttack()
@@ -141,6 +204,8 @@ public class PlayerCombat : MonoBehaviour
 
         currentWeapon.roundsInMagazine--;
         if (currentWeapon.roundsInMagazine <= 0) OnReload();
+
+        attackCooldownTimer = Time.time + (1 / attackRate);
     }
 
     private float sizeX = 4, sizeY = 6;
@@ -156,15 +221,16 @@ public class PlayerCombat : MonoBehaviour
         Collider2D[] colls = Physics2D.OverlapBoxAll(pos, new Vector2(sizeX, sizeY), 0);
         for (int i = 0; i < colls.Length; i++)
         {
-            if (colls[i].gameObject == gameObject) continue;
+            if (colls[i].gameObject == gameObject || colls[i].gameObject.layer != gameObject.layer) continue;
             var target = colls[i].GetComponent<IDamageable>();
-            if (target != null) target.OnDamage(weaponDamage, PlayerController.instance.CurrentDimension);
+            if (target != null) target.OnDamage(weaponDamage);
             else
             {
                 //Destroy enemy bullets
                 colls[i].GetComponent<Projectile>()?.OnReturnToPool();
             }
         }
+        attackCooldownTimer = Time.time + (1 / attackRate);
     }
 
     #region - Reloading -
@@ -202,6 +268,7 @@ public class PlayerCombat : MonoBehaviour
         
         //The number of rounds which can be loaded into magazine
         int spaceInMagazine = playerWeapon.magazineCapacity - playerWeapon.roundsInMagazine;
+        if (spaceInMagazine == 0) return;
 
         //The player has enough ammunition to fully load the magazine
         if (spaceInMagazine <= m_weaponAmmoCount[(int)playerWeapon.weapon.Type])
@@ -221,37 +288,38 @@ public class PlayerCombat : MonoBehaviour
     public void OnNewWeaponUnlocked(int index)
     {
         m_playerWeapons[index].isUnlocked = true;
+        onNewWeaponUnlocked?.Invoke();
     }
 
     public void OnWeaponUpgraded(int index, int stat)
     {
         if (stat == 0) //Damage
         {
-            m_playerWeapons[index].damageTier++;
+            m_playerWeapons[index].damage_Tier++;
         }
         else if (stat == 1) //Attack rate
         {
-            m_playerWeapons[index].attackRateTier++;
+            m_playerWeapons[index].attackRate_Tier++;
         }
         else if (stat == 2) //Ammo cap
         {
-            m_playerWeapons[index].ammoCapacityTier++;
+            m_playerWeapons[index].ammoCapacity_Tier++;
         }
         else if (stat == 3) //Magazine
         {
-            m_playerWeapons[index].magazineCapacityTier++;
+            m_playerWeapons[index].magazineCapacity_Tier++;
         }
 
         //Reload current stats
-        attackRate = currentWeapon.weapon.GetAttackRate(currentWeapon.attackRateTier);
-        weaponDamage = currentWeapon.weapon.GetDamage(currentWeapon.damageTier);
+        attackRate = currentWeapon.weapon.GetAttackRate(currentWeapon.attackRate_Tier);
+        weaponDamage = currentWeapon.weapon.GetDamage(currentWeapon.damage_Tier);
 
         for (int i = 0; i < m_playerWeapons.Length; i++)
         {
             //Refresh weapon magazine capacities
-            m_playerWeapons[i].magazineCapacity = m_playerWeapons[i].weapon.GetMagazineCapacity(m_playerWeapons[i].magazineCapacityTier);
+            m_playerWeapons[i].magazineCapacity = m_playerWeapons[i].weapon.GetMagazineCapacity(m_playerWeapons[i].magazineCapacity_Tier);
             //Refresh max ammo capacities
-            weaponMaxAmmoCapacity[i] = m_playerWeapons[i].weapon.GetAmmoCapacity(m_playerWeapons[i].ammoCapacityTier);
+            weaponMaxAmmoCapacity[i] = m_playerWeapons[i].weapon.GetAmmoCapacity(m_playerWeapons[i].ammoCapacity_Tier);
         }
     }
 
@@ -264,24 +332,33 @@ public class PlayerCombat : MonoBehaviour
             m_weaponAmmoCount[(int)type] = weaponMaxAmmoCapacity[(int)type];
     }
 
-    public void SetSavedValues(int[] ammoCount, PlayerWeapon[] weaponValues)
+    public void SetSavedValues(PlayerWeapon[] weaponValues)
     {
-        m_weaponAmmoCount = new int[6];
-        for (int i = 0; i < m_weaponAmmoCount.Length; i++)
-        {
-            m_weaponAmmoCount[i] = ammoCount[i];
-        }
-
         for (int i = 0; i < m_playerWeapons.Length; i++)
         {
             m_playerWeapons[i].isUnlocked = weaponValues[i].isUnlocked;
-            m_playerWeapons[i].roundsInMagazine = weaponValues[i].roundsInMagazine;
 
-            m_playerWeapons[i].damageTier = weaponValues[i].damageTier;
-            m_playerWeapons[i].attackRateTier = weaponValues[i].attackRateTier;
-            m_playerWeapons[i].ammoCapacityTier = weaponValues[i].ammoCapacityTier;
-            m_playerWeapons[i].magazineCapacityTier = weaponValues[i].magazineCapacityTier;
+            m_playerWeapons[i].damage_Tier = weaponValues[i].damage_Tier;
+            m_playerWeapons[i].attackRate_Tier = weaponValues[i].attackRate_Tier;
+            m_playerWeapons[i].ammoCapacity_Tier = weaponValues[i].ammoCapacity_Tier;
+            m_playerWeapons[i].magazineCapacity_Tier = weaponValues[i].magazineCapacity_Tier;
         }
+    }
+
+    public void OnResetValues()
+    {
+        for (int i = 0; i < m_playerWeapons.Length; i++)
+        {
+            if (i <= 1) m_playerWeapons[i].isUnlocked = true;
+            else m_playerWeapons[i].isUnlocked = false;
+
+            m_playerWeapons[i].damage_Tier = 1;
+            m_playerWeapons[i].attackRate_Tier = 1;
+            m_playerWeapons[i].ammoCapacity_Tier = 1;
+            m_playerWeapons[i].magazineCapacity_Tier = 1;
+        }
+
+        InitializeWeaponry();
     }
 
     private void OnDrawGizmosSelected()
@@ -303,10 +380,10 @@ public class PlayerWeapon
     public int magazineCapacity;
 
     [Space]
-    public int damageTier;
-    public int attackRateTier;
-    public int ammoCapacityTier;
-    public int magazineCapacityTier;
+    public int damage_Tier;
+    public int attackRate_Tier;
+    public int ammoCapacity_Tier;
+    public int magazineCapacity_Tier;
     [Space]
     public bool isUnlocked;
 
@@ -315,12 +392,12 @@ public class PlayerWeapon
         this.weapon = weapon;
         roundsInMagazine = rounds;
 
-        damageTier = dmgTier;
-        attackRateTier = rateTier;
-        ammoCapacityTier = ammoCapTier;
-        magazineCapacityTier = magCapTier;
+        damage_Tier = dmgTier;
+        attackRate_Tier = rateTier;
+        ammoCapacity_Tier = ammoCapTier;
+        magazineCapacity_Tier = magCapTier;
 
-        magazineCapacity = weapon.GetMagazineCapacity(magazineCapacityTier);
+        magazineCapacity = weapon.GetMagazineCapacity(magazineCapacity_Tier);
 
         isUnlocked = false;
         if (weapon.Type == WeaponType.Sword 

@@ -21,6 +21,13 @@ public class ShopManager : MonoBehaviour
     [SerializeField] private Button[] purchaseWeaponButtons; //The buttons to click to buy a new weapon
     [SerializeField] private GameObject[] weaponPriceTags; //GameObject with text to display weapon costs
     [Space]
+    [SerializeField] private TMP_Text[] swordUpgradeCostText;
+    [SerializeField] private TMP_Text[] pistolUpgradeCostText;
+    [SerializeField] private TMP_Text[] shotgunUpgradeCostText;
+    [SerializeField] private TMP_Text[] rifleUpgradeCostText;
+    [SerializeField] private TMP_Text[] SMGUpgradeCostText;
+    [SerializeField] private TMP_Text[] minigunUpgradeCostText;
+    [Space]
     [SerializeField] private Button[] swordUpgradeButtons;
     [SerializeField] private Button[] pistolUpgradeButtons;
     [SerializeField] private Button[] shotgunUpgradeButtons;
@@ -164,6 +171,7 @@ public class ShopManager : MonoBehaviour
         }
     }
 
+    #region - Weapon Purchase and Upgrades -
     private void OnPurchaseNewWeapon(int weaponIndex)
     {
         //The player has already purchased this weapon
@@ -204,10 +212,10 @@ public class ShopManager : MonoBehaviour
                 TryUpgradeWeaponAttacRate(weaponIndex);
                 break;
             case 2:
-                TryUpgradeWeaponAmmoCapacity(weaponIndex);
+                TryUpgradeWeaponMagazine(weaponIndex);
                 break;
             case 3:
-                TryUpgradeWeaponMagazine(weaponIndex);
+                TryUpgradeWeaponAmmoCapacity(weaponIndex);
                 break;
         }
     }
@@ -215,7 +223,7 @@ public class ShopManager : MonoBehaviour
     private void TryUpgradeWeaponDamage(int weaponIndex)
     {
         //return if fully upgraded or not enough cash
-        int upgradeTier = playerCombat.PlayerWeapons[weaponIndex].damageTier;
+        int upgradeTier = playerCombat.PlayerWeapons[weaponIndex].damage_Tier;
         if (upgradeTier >= 5) return;
 
         int clamCost = weaponReferences[weaponIndex].GetDamageUpgradeCost(upgradeTier);
@@ -231,7 +239,7 @@ public class ShopManager : MonoBehaviour
     private void TryUpgradeWeaponAttacRate(int weaponIndex)
     {
         //return if fully upgraded  //return if not enough cash
-        int upgradeTier = playerCombat.PlayerWeapons[weaponIndex].attackRateTier;
+        int upgradeTier = playerCombat.PlayerWeapons[weaponIndex].attackRate_Tier;
         if (upgradeTier >= 5) return;
 
         int clamCost = weaponReferences[weaponIndex].GetAttackRateUpgradeCost(upgradeTier);
@@ -247,7 +255,7 @@ public class ShopManager : MonoBehaviour
     private void TryUpgradeWeaponAmmoCapacity(int weaponIndex)
     {
         //return if fully upgraded  //return if not enough cash
-        int upgradeTier = playerCombat.PlayerWeapons[weaponIndex].ammoCapacityTier;
+        int upgradeTier = playerCombat.PlayerWeapons[weaponIndex].ammoCapacity_Tier;
         if (upgradeTier >= 5) return;
 
         int clamCost = weaponReferences[weaponIndex].GetAmmoCapUpgradeCost(upgradeTier);
@@ -263,7 +271,7 @@ public class ShopManager : MonoBehaviour
     private void TryUpgradeWeaponMagazine(int weaponIndex)
     {
         //return if fully upgraded  //return if not enough cash
-        int upgradeTier = playerCombat.PlayerWeapons[weaponIndex].magazineCapacityTier;
+        int upgradeTier = playerCombat.PlayerWeapons[weaponIndex].magazineCapacity_Tier;
         if (upgradeTier >= 5) return;
 
         int clamCost = weaponReferences[weaponIndex].GetMagazineUpgradeCost(upgradeTier);
@@ -275,7 +283,9 @@ public class ShopManager : MonoBehaviour
 
         UpdateWeaponDisplays(weaponIndex);
     }
+    #endregion
 
+    #region - Player Upgrades -
     private void OnUpgradeHealth()
     {
         if (playerHealthUpgrades >= 5) return;
@@ -317,6 +327,7 @@ public class ShopManager : MonoBehaviour
         shieldMaxed.SetActive(playerArmorUpgrades >= 5);
         //Or Display Price for next upgrade
     }
+    #endregion
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -353,40 +364,70 @@ public class ShopManager : MonoBehaviour
         switch (weapon)
         {
             case (int)WeaponType.Sword:
-                swordUpgradePips[0].sprite = upgradePips[playerCombat.PlayerWeapons[(int)WeaponType.Sword].damageTier];
-                swordUpgradePips[1].sprite = upgradePips[playerCombat.PlayerWeapons[(int)WeaponType.Sword].attackRateTier];
-                swordUpgradePips[2].sprite = upgradePips[playerCombat.PlayerWeapons[(int)WeaponType.Sword].ammoCapacityTier];
-                swordUpgradePips[3].sprite = upgradePips[playerCombat.PlayerWeapons[(int)WeaponType.Sword].magazineCapacityTier];
+                swordUpgradeCostText[0].text = weaponReferences[0].GetDamageUpgradeCost(playerCombat.PlayerWeapons[0].damage_Tier).ToString();
+                swordUpgradeCostText[1].text = weaponReferences[0].GetAttackRateUpgradeCost(playerCombat.PlayerWeapons[0].attackRate_Tier).ToString();
+                swordUpgradeCostText[2].text = weaponReferences[0].GetMagazineUpgradeCost(playerCombat.PlayerWeapons[0].magazineCapacity_Tier).ToString();
+                swordUpgradeCostText[3].text = weaponReferences[0].GetAmmoCapUpgradeCost(playerCombat.PlayerWeapons[0].ammoCapacity_Tier).ToString();
+
+                swordUpgradePips[0].sprite = upgradePips[playerCombat.PlayerWeapons[(int)WeaponType.Sword].damage_Tier];
+                swordUpgradePips[1].sprite = upgradePips[playerCombat.PlayerWeapons[(int)WeaponType.Sword].attackRate_Tier];
+                swordUpgradePips[2].sprite = upgradePips[playerCombat.PlayerWeapons[(int)WeaponType.Sword].magazineCapacity_Tier];
+                swordUpgradePips[3].sprite = upgradePips[playerCombat.PlayerWeapons[(int)WeaponType.Sword].ammoCapacity_Tier];
                 break;
             case (int)WeaponType.Pistol:
-                pistolUpgradePips[0].sprite = upgradePips[playerCombat.PlayerWeapons[(int)WeaponType.Pistol].damageTier];
-                pistolUpgradePips[1].sprite = upgradePips[playerCombat.PlayerWeapons[(int)WeaponType.Pistol].attackRateTier];
-                pistolUpgradePips[2].sprite = upgradePips[playerCombat.PlayerWeapons[(int)WeaponType.Pistol].ammoCapacityTier];
-                pistolUpgradePips[3].sprite = upgradePips[playerCombat.PlayerWeapons[(int)WeaponType.Pistol].magazineCapacityTier];
+                pistolUpgradeCostText[0].text = weaponReferences[1].GetDamageUpgradeCost(playerCombat.PlayerWeapons[1].damage_Tier).ToString();
+                pistolUpgradeCostText[1].text = weaponReferences[1].GetAttackRateUpgradeCost(playerCombat.PlayerWeapons[1].attackRate_Tier).ToString();
+                pistolUpgradeCostText[2].text = weaponReferences[1].GetMagazineUpgradeCost(playerCombat.PlayerWeapons[1].magazineCapacity_Tier).ToString();
+                pistolUpgradeCostText[3].text = weaponReferences[1].GetAmmoCapUpgradeCost(playerCombat.PlayerWeapons[1].ammoCapacity_Tier).ToString();
+
+                pistolUpgradePips[0].sprite = upgradePips[playerCombat.PlayerWeapons[(int)WeaponType.Pistol].damage_Tier];
+                pistolUpgradePips[1].sprite = upgradePips[playerCombat.PlayerWeapons[(int)WeaponType.Pistol].attackRate_Tier];
+                pistolUpgradePips[2].sprite = upgradePips[playerCombat.PlayerWeapons[(int)WeaponType.Pistol].magazineCapacity_Tier];
+                pistolUpgradePips[3].sprite = upgradePips[playerCombat.PlayerWeapons[(int)WeaponType.Pistol].ammoCapacity_Tier];
                 break;
             case (int)WeaponType.Shotgun:
-                shotgunUpgradePips[0].sprite = upgradePips[playerCombat.PlayerWeapons[(int)WeaponType.Shotgun].damageTier];
-                shotgunUpgradePips[1].sprite = upgradePips[playerCombat.PlayerWeapons[(int)WeaponType.Shotgun].attackRateTier];
-                shotgunUpgradePips[2].sprite = upgradePips[playerCombat.PlayerWeapons[(int)WeaponType.Shotgun].ammoCapacityTier];
-                shotgunUpgradePips[3].sprite = upgradePips[playerCombat.PlayerWeapons[(int)WeaponType.Shotgun].magazineCapacityTier];
+                shotgunUpgradeCostText[0].text = weaponReferences[2].GetDamageUpgradeCost(playerCombat.PlayerWeapons[2].damage_Tier).ToString();
+                shotgunUpgradeCostText[1].text = weaponReferences[2].GetAttackRateUpgradeCost(playerCombat.PlayerWeapons[2].attackRate_Tier).ToString();
+                shotgunUpgradeCostText[2].text = weaponReferences[2].GetMagazineUpgradeCost(playerCombat.PlayerWeapons[2].magazineCapacity_Tier).ToString();
+                shotgunUpgradeCostText[3].text = weaponReferences[2].GetAmmoCapUpgradeCost(playerCombat.PlayerWeapons[2].ammoCapacity_Tier).ToString();
+
+                shotgunUpgradePips[0].sprite = upgradePips[playerCombat.PlayerWeapons[(int)WeaponType.Shotgun].damage_Tier];
+                shotgunUpgradePips[1].sprite = upgradePips[playerCombat.PlayerWeapons[(int)WeaponType.Shotgun].attackRate_Tier];
+                shotgunUpgradePips[2].sprite = upgradePips[playerCombat.PlayerWeapons[(int)WeaponType.Shotgun].magazineCapacity_Tier];
+                shotgunUpgradePips[3].sprite = upgradePips[playerCombat.PlayerWeapons[(int)WeaponType.Shotgun].ammoCapacity_Tier];
                 break;
             case (int)WeaponType.Rifle:
-                rifleUpgradePips[0].sprite = upgradePips[playerCombat.PlayerWeapons[(int)WeaponType.Rifle].damageTier];
-                rifleUpgradePips[1].sprite = upgradePips[playerCombat.PlayerWeapons[(int)WeaponType.Rifle].attackRateTier];
-                rifleUpgradePips[2].sprite = upgradePips[playerCombat.PlayerWeapons[(int)WeaponType.Rifle].ammoCapacityTier];
-                rifleUpgradePips[3].sprite = upgradePips[playerCombat.PlayerWeapons[(int)WeaponType.Rifle].magazineCapacityTier];
+                rifleUpgradeCostText[0].text = weaponReferences[3].GetDamageUpgradeCost(playerCombat.PlayerWeapons[3].damage_Tier).ToString();
+                rifleUpgradeCostText[1].text = weaponReferences[3].GetAttackRateUpgradeCost(playerCombat.PlayerWeapons[3].attackRate_Tier).ToString();
+                rifleUpgradeCostText[2].text = weaponReferences[3].GetMagazineUpgradeCost(playerCombat.PlayerWeapons[3].magazineCapacity_Tier).ToString();
+                rifleUpgradeCostText[3].text = weaponReferences[3].GetAmmoCapUpgradeCost(playerCombat.PlayerWeapons[3].ammoCapacity_Tier).ToString();
+
+                rifleUpgradePips[0].sprite = upgradePips[playerCombat.PlayerWeapons[(int)WeaponType.Rifle].damage_Tier];
+                rifleUpgradePips[1].sprite = upgradePips[playerCombat.PlayerWeapons[(int)WeaponType.Rifle].attackRate_Tier];
+                rifleUpgradePips[2].sprite = upgradePips[playerCombat.PlayerWeapons[(int)WeaponType.Rifle].magazineCapacity_Tier];
+                rifleUpgradePips[3].sprite = upgradePips[playerCombat.PlayerWeapons[(int)WeaponType.Rifle].ammoCapacity_Tier];
                 break;
             case (int)WeaponType.SMG:
-                SMGUpgradePips[0].sprite = upgradePips[playerCombat.PlayerWeapons[(int)WeaponType.SMG].damageTier];
-                SMGUpgradePips[1].sprite = upgradePips[playerCombat.PlayerWeapons[(int)WeaponType.SMG].attackRateTier];
-                SMGUpgradePips[2].sprite = upgradePips[playerCombat.PlayerWeapons[(int)WeaponType.SMG].ammoCapacityTier];
-                SMGUpgradePips[3].sprite = upgradePips[playerCombat.PlayerWeapons[(int)WeaponType.SMG].magazineCapacityTier];
+                SMGUpgradeCostText[0].text = weaponReferences[4].GetDamageUpgradeCost(playerCombat.PlayerWeapons[4].damage_Tier).ToString();
+                SMGUpgradeCostText[1].text = weaponReferences[4].GetAttackRateUpgradeCost(playerCombat.PlayerWeapons[4].attackRate_Tier).ToString();
+                SMGUpgradeCostText[2].text = weaponReferences[4].GetMagazineUpgradeCost(playerCombat.PlayerWeapons[4].magazineCapacity_Tier).ToString();
+                SMGUpgradeCostText[3].text = weaponReferences[4].GetAmmoCapUpgradeCost(playerCombat.PlayerWeapons[4].ammoCapacity_Tier).ToString();
+
+                SMGUpgradePips[0].sprite = upgradePips[playerCombat.PlayerWeapons[(int)WeaponType.SMG].damage_Tier];
+                SMGUpgradePips[1].sprite = upgradePips[playerCombat.PlayerWeapons[(int)WeaponType.SMG].attackRate_Tier];
+                SMGUpgradePips[2].sprite = upgradePips[playerCombat.PlayerWeapons[(int)WeaponType.SMG].magazineCapacity_Tier];
+                SMGUpgradePips[3].sprite = upgradePips[playerCombat.PlayerWeapons[(int)WeaponType.SMG].ammoCapacity_Tier];
                 break;
             case (int)WeaponType.MiniGun:
-                minigunUpgradePips[0].sprite = upgradePips[playerCombat.PlayerWeapons[(int)WeaponType.MiniGun].damageTier];
-                minigunUpgradePips[1].sprite = upgradePips[playerCombat.PlayerWeapons[(int)WeaponType.MiniGun].attackRateTier];
-                minigunUpgradePips[2].sprite = upgradePips[playerCombat.PlayerWeapons[(int)WeaponType.MiniGun].ammoCapacityTier];
-                minigunUpgradePips[3].sprite = upgradePips[playerCombat.PlayerWeapons[(int)WeaponType.MiniGun].magazineCapacityTier];
+                minigunUpgradeCostText[0].text = weaponReferences[5].GetDamageUpgradeCost(playerCombat.PlayerWeapons[5].damage_Tier).ToString();
+                minigunUpgradeCostText[1].text = weaponReferences[5].GetAttackRateUpgradeCost(playerCombat.PlayerWeapons[5].attackRate_Tier).ToString();
+                minigunUpgradeCostText[2].text = weaponReferences[5].GetMagazineUpgradeCost(playerCombat.PlayerWeapons[5].magazineCapacity_Tier).ToString();
+                minigunUpgradeCostText[3].text = weaponReferences[5].GetAmmoCapUpgradeCost(playerCombat.PlayerWeapons[5].ammoCapacity_Tier).ToString();
+
+                minigunUpgradePips[0].sprite = upgradePips[playerCombat.PlayerWeapons[(int)WeaponType.MiniGun].damage_Tier];
+                minigunUpgradePips[1].sprite = upgradePips[playerCombat.PlayerWeapons[(int)WeaponType.MiniGun].attackRate_Tier];
+                minigunUpgradePips[2].sprite = upgradePips[playerCombat.PlayerWeapons[(int)WeaponType.MiniGun].magazineCapacity_Tier];
+                minigunUpgradePips[3].sprite = upgradePips[playerCombat.PlayerWeapons[(int)WeaponType.MiniGun].ammoCapacity_Tier];
                 break;
         }
     }

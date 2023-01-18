@@ -18,6 +18,9 @@ public class PlayerController : MonoBehaviour, IDamageable, IDimensionHandler
 
     public delegate void OnPlayerDimensionChangeCallback(Dimension newDimension);
     public OnPlayerDimensionChangeCallback onPlayerDimensionChange;
+
+    public delegate void OnPlayerCreatePortalCallback();
+    public OnPlayerCreatePortalCallback onNewPortal;
     #endregion
 
     #region - Components -
@@ -49,6 +52,8 @@ public class PlayerController : MonoBehaviour, IDamageable, IDimensionHandler
     private bool canMove = true;
     #endregion
 
+    private float dimensionSwapCooldown = 0.5f;
+    private float lastDimensionSwap;
     [SerializeField] private Dimension m_currentDimension;
     public Dimension CurrentDimension => m_currentDimension;
 
@@ -107,19 +112,25 @@ public class PlayerController : MonoBehaviour, IDamageable, IDimensionHandler
 
         if (Input.GetKeyDown(KeyCode.E)) OnInteract();
         if (Input.GetKeyDown(KeyCode.R)) combat.OnReload();
-        if (Input.GetKeyDown(KeyCode.Q)) CycleDimension();
+        //if (Input.GetKeyDown(KeyCode.Q)) CycleDimension();
 
         if (Input.GetMouseButton(0)) combat.OnAttack();
 
         //Weapon Selection
-        if (Input.GetKeyDown(KeyCode.Alpha1)) combat.OnSwapWeapons(1);
-        if (Input.GetKeyDown(KeyCode.Alpha2)) combat.OnSwapWeapons(2);
-        if (Input.GetKeyDown(KeyCode.Alpha3)) combat.OnSwapWeapons(3);
-        if (Input.GetKeyDown(KeyCode.Alpha4)) combat.OnSwapWeapons(4);
-        if (Input.GetKeyDown(KeyCode.Alpha5)) combat.OnSwapWeapons(5);
-        if (Input.GetKeyDown(KeyCode.Alpha6)) combat.OnSwapWeapons(6);
+        if (Input.GetKeyDown(KeyCode.Q)) combat.OnSwapWeapons(-1);
+        if (Input.GetKeyDown(KeyCode.Alpha1)) combat.OnSwapWeapons(0);
+        if (Input.GetKeyDown(KeyCode.Alpha2)) combat.OnSwapWeapons(1);
+        if (Input.GetKeyDown(KeyCode.Alpha3)) combat.OnSwapWeapons(2);
+        if (Input.GetKeyDown(KeyCode.Alpha4)) combat.OnSwapWeapons(3);
+        if (Input.GetKeyDown(KeyCode.Alpha5)) combat.OnSwapWeapons(4);
+        if (Input.GetKeyDown(KeyCode.Alpha6)) combat.OnSwapWeapons(5);
+
+        if (Input.mouseScrollDelta.y != 0) combat.CycleWeapons(Input.mouseScrollDelta.y);
 
         if (Input.GetKeyDown(KeyCode.Escape)) UIManager.PauseGame();
+
+        if (Input.GetKeyDown(KeyCode.BackQuote)) DebugController.OnToggleDebug();
+        if (Input.GetKeyDown(KeyCode.Return)) DebugController.OnReturn();
     }
 
     private void OnInteract()
@@ -176,7 +187,7 @@ public class PlayerController : MonoBehaviour, IDamageable, IDimensionHandler
     #endregion
 
     #region - Health -
-    public void OnDamage(int dmg, Dimension dimension)
+    public void OnDamage(int dmg)
     {
         if (Time.time < damageCooldown || isInvincible || !isAlive) return;
         //if (dimension != m_currentDimension) return;
@@ -211,12 +222,12 @@ public class PlayerController : MonoBehaviour, IDamageable, IDimensionHandler
         onHealthChange?.Invoke();
     }
 
-    public void OnDamagePlayer(int dmg, Dimension dimension)
+    public void OnDamagePlayer(int dmg)
     {
-        OnDamage(dmg, dimension);
+        OnDamage(dmg);
     }
 
-    public void OnDamageEnemy(int dmg, Dimension dimension)
+    public void OnDamageEnemy(int dmg)
     {
         //Do nothing
     }
@@ -279,22 +290,20 @@ public class PlayerController : MonoBehaviour, IDamageable, IDimensionHandler
     }
     #endregion
 
-    private void CycleDimension()
-    {
-        int i = (int)m_currentDimension + 1;
-        if (i >= Enum.GetNames(typeof(Dimension)).Length) i = 0;
-        SetDimension((Dimension)i);
-        //m_currentDimension = (Dimension)i;
-        Debug.Log("Cycling to dimension " + m_currentDimension.ToString());
-    }
-
     public void SetDimension(Dimension dimension)
     {
+        if (lastDimensionSwap > Time.time) return;
+
         m_currentDimension = dimension;
         int newLayer = LayerMask.NameToLayer(dimension.ToString());
         gameObject.layer = newLayer;
         onPlayerDimensionChange?.Invoke(m_currentDimension);
-        //Debug.Log("Current Layer: " + gameObject.layer);
+        lastDimensionSwap = Time.time + dimensionSwapCooldown;
+    }
+
+    public Dimension GetDimension()
+    {
+        return m_currentDimension;
     }
 
     public void SetSavedValues(int maxHealth, int maxArmor)
@@ -304,6 +313,20 @@ public class PlayerController : MonoBehaviour, IDamageable, IDimensionHandler
 
         onHealthUpgrade?.Invoke();
         onArmorUpgrade?.Invoke();
+    }
+
+    public void OnResetValues()
+    {
+        m_maxHealth = 10;
+        m_maxArmor = 10;
+
+        onHealthUpgrade?.Invoke();
+        onArmorUpgrade?.Invoke();
+
+        combat.OnResetValues();
+
+        GameManager.instance.OnResetValues();
+        GameManager.instance.saveSystem.SaveData();
     }
 
     public void OnRestoreAll()
@@ -316,5 +339,10 @@ public class PlayerController : MonoBehaviour, IDamageable, IDimensionHandler
 
         onHealthChange?.Invoke();
         onArmorChange?.Invoke();
+    }
+
+    public void ToggleGodMode()
+    {
+
     }
 }

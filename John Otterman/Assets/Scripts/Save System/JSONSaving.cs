@@ -73,7 +73,7 @@ public class JSONSaving : MonoBehaviour
         PlayerController.instance.SetSavedValues(data.playerMaxHealth, data.playerMaxArmor);
 
         var combat = PlayerController.instance.combat;
-        combat.SetSavedValues(data.playerAmmoCount, data.playerWeaponData);
+        combat.SetSavedValues(data.playerWeaponData);
     }
 
     public void ResetSaveFile()
@@ -97,12 +97,6 @@ public class JSONSaving : MonoBehaviour
             playerData.stageHighScores[i] = 0;
         }
 
-        playerData.playerAmmoCount = new int[6];
-        for (int i = 0; i < playerData.playerAmmoCount.Length; i++)
-        {
-            playerData.playerAmmoCount[i] = 0;
-        }
-
         playerData.playerWeaponData = new PlayerWeapon[6];
         for (int i = 0; i < playerData.playerWeaponData.Length; i++)
         {
@@ -117,12 +111,11 @@ public class JSONSaving : MonoBehaviour
             {
                 playerData.playerWeaponData[i].isUnlocked = false;
             }
-            playerData.playerWeaponData[i].roundsInMagazine = 0;
 
-            playerData.playerWeaponData[i].damageTier = 1;
-            playerData.playerWeaponData[i].attackRateTier = 1;
-            playerData.playerWeaponData[i].ammoCapacityTier = 1;
-            playerData.playerWeaponData[i].magazineCapacityTier = 1;
+            playerData.playerWeaponData[i].damage_Tier = 1;
+            playerData.playerWeaponData[i].attackRate_Tier = 1;
+            playerData.playerWeaponData[i].ammoCapacity_Tier = 1;
+            playerData.playerWeaponData[i].magazineCapacity_Tier = 1;
         }
 
         LoadData();
