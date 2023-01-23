@@ -88,14 +88,14 @@ public class PlayerCombat : MonoBehaviour
         int indexModifier = Mathf.RoundToInt(cycleDirection);
         newIndex += indexModifier;
 
-        if (newIndex >= 6) newIndex = -1;
-        else if (newIndex <= -2) newIndex = 5;
+        if (newIndex > 5) newIndex = 0;
+        else if (newIndex < 0) newIndex = 5;
 
         while(OnSwapWeapons(newIndex) == false)
         {
             newIndex += indexModifier;
-            if (newIndex >= 6) newIndex = -1;
-            else if (newIndex <= -2) newIndex = 5;
+            if (newIndex > 5) newIndex = 0;
+            else if (newIndex < 0) newIndex = 5;
         }
     }
 
@@ -105,14 +105,14 @@ public class PlayerCombat : MonoBehaviour
 
         if (currentActiveWeapon != null)
         {
-            ObjectPooler.Return(currentWeapon.weapon.ItemName + "_player", currentActiveWeapon.gameObject);
+            ObjectPooler.Return(currentWeapon.weapon.ItemName, currentActiveWeapon.gameObject);
         }
 
         currentWeapon = portalGun;
         attackRate = currentWeapon.weapon.GetAttackRate(currentWeapon.attackRate_Tier);
         weaponDamage = currentWeapon.weapon.GetDamage(currentWeapon.damage_Tier);
 
-        var go = ObjectPooler.Spawn(currentWeapon.weapon.ItemName + "_player", pointer.position, pointer.rotation);
+        var go = ObjectPooler.Spawn(currentWeapon.weapon.ItemName, pointer.position, pointer.rotation);
 
         currentActiveWeapon = go.GetComponent<ActiveWeapon>();
         go.transform.SetParent(pointer);
@@ -141,7 +141,7 @@ public class PlayerCombat : MonoBehaviour
 
         if (currentActiveWeapon != null)
         {
-            ObjectPooler.Return(currentWeapon.weapon.ItemName + "_player", currentActiveWeapon.gameObject);
+            ObjectPooler.Return(currentWeapon.weapon.ItemName, currentActiveWeapon.gameObject);
         }
 
         currentWeapon = newWeapon;
@@ -149,7 +149,7 @@ public class PlayerCombat : MonoBehaviour
         attackRate = currentWeapon.weapon.GetAttackRate(currentWeapon.attackRate_Tier);
         weaponDamage = currentWeapon.weapon.GetDamage(currentWeapon.damage_Tier);
 
-        var go = ObjectPooler.Spawn(newWeapon.weapon.ItemName + "_player", pointer.position, pointer.rotation);
+        var go = ObjectPooler.Spawn(newWeapon.weapon.ItemName, pointer.position, pointer.rotation);
 
         currentActiveWeapon = go.GetComponent<ActiveWeapon>();
         go.transform.SetParent(pointer);
@@ -166,20 +166,19 @@ public class PlayerCombat : MonoBehaviour
     {
         if (attackCooldownTimer > Time.time || !canAttack || isReloading || Time.timeScale == 0) return;
 
-        if (currentWeapon == portalGun) OnPortalGunUse();
-        else if (currentWeapon.weapon.Type == WeaponType.Sword) OnSwingWeapon();
+        //if (currentWeapon == portalGun) OnPortalGunUse();
+        if (currentWeapon.weapon.Type == WeaponType.Sword) OnSwingWeapon();
         else OnProjectileAttack();
     }
 
-    private void OnPortalGunUse()
+    public void OnPortalGunUse()
     {
         if (timeOfNextPortal > Time.time) return;
         PlayerController.instance.onNewPortal?.Invoke();
 
         var portalRot = Quaternion.Euler(0, 0, pointer.rotation.eulerAngles.z + 90);
-        var portal = ObjectPooler.Spawn(currentWeapon.weapon.ProjectilePoolTag, currentActiveWeapon.Muzzle.position, portalRot);
+        var portal = ObjectPooler.Spawn("playerPortal", currentActiveWeapon.Muzzle.position, portalRot);
         portal.GetComponent<PlayerPortal>()?.SetDimension(PlayerController.instance.CurrentDimension);
-        currentActiveWeapon.PlayEffects(); //Muzzle Flash
 
         timeOfNextPortal = Time.time + portalCooldown;
     }

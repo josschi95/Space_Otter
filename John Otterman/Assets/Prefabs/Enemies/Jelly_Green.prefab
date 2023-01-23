@@ -97,11 +97,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   spriteRenderer: {fileID: 2294945967927949988}
   pointsValue: 25
-  m_maxHealth: 4
+  m_maxHealth: 5
   maxArmor: 0
   m_damageOnContact: 1
   chaseRadius: 20
-  movementSpeed: 2
+  movementSpeed: 3
   jelly: 1
   m_currentDimension: 0
 --- !u!114 &2294945966645040715
@@ -118,9 +118,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   attackRadius: 0
   damageModifier: 0
-  defaultWeapon: {fileID: 0}
+  defaultWeapon: {fileID: 11400000, guid: 36f0aefb56d96194aa9b30c50a02af3d, type: 2}
   sharkHands: {fileID: 0}
-  unarmedOverride: 0
+  unarmedOverride: 1
 --- !u!1 &2294945967927949987
 GameObject:
   m_ObjectHideFlags: 0

@@ -9,21 +9,24 @@ EditorBuildSettings:
     path: Assets/Scenes/00_MainMenu.unity
     guid: d1d022d9a1380bd4f9a77e08d367ef30
   - enabled: 1
-    path: Assets/Scenes/01_Hub.unity
+    path: Assets/Scenes/01_Tutorial Dungeon.unity
+    guid: 62ea8d79459ce7e449253437caa4a322
+  - enabled: 1
+    path: Assets/Scenes/02_Hub.unity
     guid: cb3961163891d634482a348bb88c63ae
   - enabled: 1
-    path: Assets/Scenes/02_Dungeon_00.unity
+    path: Assets/Scenes/03_Dungeon.unity
     guid: 384c2115c9eee9940a09ccf676d96962
   - enabled: 1
-    path: Assets/Scenes/03_Dungeon_01.unity
-    guid: 263f52662fd139442a9475a2472b586a
+    path: Assets/Scenes/04_Boss_King_Jelly.unity
+    guid: 7228a93f3c76926419bb802ffc79ca6a
   - enabled: 1
-    path: Assets/Scenes/04_Dungeon_02.unity
-    guid: afa59f612f2fd8a4685df7f8636b71b8
+    path: Assets/Scenes/05_Boss_King_Shark.unity
+    guid: 805aaa92ca2a1fe4cb29fa3f858a69d1
   - enabled: 1
-    path: Assets/Scenes/05_Mobius_Lair.unity
+    path: Assets/Scenes/06_Boss_Mobius.unity
     guid: 5d9997a8ebb9501409319eaf5de769d0
   - enabled: 1
-    path: Assets/Scenes/06_Credits.unity
+    path: Assets/Scenes/07_Credits.unity
     guid: 13460aaba426a3e4da8542d551b2ca75
   m_configObjects: {}

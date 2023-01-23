@@ -92,8 +92,6 @@ public class UIManager : MonoBehaviour
         continueButton.onClick.AddListener(TogglePause);
         quitToHubButton.onClick.AddListener(QuitToHub);
         quitButton.onClick.AddListener(delegate { Application.Quit(); });
-        unlockAllButton.onClick.AddListener(delegate { GameManager.instance.UnlockAll(); });
-        clearDataButton.onClick.AddListener(delegate { GameManager.instance.saveSystem.ResetSaveFile(); });
 
         returnToHubButton.onClick.AddListener(OnReturnToHub);
         returnToHubButton2.onClick.AddListener(OnReturnToHub);
@@ -358,6 +356,13 @@ public class UIManager : MonoBehaviour
 
     public void OnGameOver()
     {
+        //Restart the tutorial if you fail
+        if (SceneManager.GetActiveScene().buildIndex == 1)
+        {
+            SceneManager.LoadScene(1);
+            return;
+        }
+
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
 
@@ -373,6 +378,6 @@ public class UIManager : MonoBehaviour
         pauseMenu.SetActive(false);
         stageClearMenu.SetActive(false);
         gameOverScreen.SetActive(false);
-        SceneManager.LoadScene(1);
+        SceneManager.LoadScene(2);
     }
 }

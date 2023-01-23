@@ -115,9 +115,9 @@ public class PlayerController : MonoBehaviour, IDamageable, IDimensionHandler
         //if (Input.GetKeyDown(KeyCode.Q)) CycleDimension();
 
         if (Input.GetMouseButton(0)) combat.OnAttack();
+        if (Input.GetMouseButtonDown(1)) combat.OnPortalGunUse();
 
         //Weapon Selection
-        if (Input.GetKeyDown(KeyCode.Q)) combat.OnSwapWeapons(-1);
         if (Input.GetKeyDown(KeyCode.Alpha1)) combat.OnSwapWeapons(0);
         if (Input.GetKeyDown(KeyCode.Alpha2)) combat.OnSwapWeapons(1);
         if (Input.GetKeyDown(KeyCode.Alpha3)) combat.OnSwapWeapons(2);
@@ -326,7 +326,7 @@ public class PlayerController : MonoBehaviour, IDamageable, IDimensionHandler
         combat.OnResetValues();
 
         GameManager.instance.OnResetValues();
-        GameManager.instance.saveSystem.SaveData();
+        //GameManager.instance.saveSystem.SaveData();
     }
 
     public void OnRestoreAll()

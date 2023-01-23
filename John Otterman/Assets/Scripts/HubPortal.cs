@@ -1,12 +1,13 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class HubPortal : MonoBehaviour
 {
     [SerializeField] private bool bossPortal = false;
-    [SerializeField] private int bossSceneIndex = 5;
+    private int bossStageIndex;
+    public void SetBossStageIndex(int index)
+    {
+        bossStageIndex = index;
+    }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -16,7 +17,7 @@ public class HubPortal : MonoBehaviour
         {
             if (bossPortal)
             {
-                SceneManager.LoadScene(bossSceneIndex);
+                GameManager.LoadScene(bossStageIndex);
                 return;
             }
             PlayerController.instance.ToggleMovement(false);

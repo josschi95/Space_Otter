@@ -1,8 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.SceneManagement;
 
 public class MobiusBossBattle : MonoBehaviour
 {
@@ -183,6 +180,6 @@ public class MobiusBossBattle : MonoBehaviour
     //Invoked upon player victory, after short delay
     private void RollCredits()
     {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+        GameManager.LoadScene(GameManager.instance.GetSceneIndex() + 1);
     }
 }

@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class CreditsManager : MonoBehaviour
 {
@@ -17,7 +16,7 @@ public class CreditsManager : MonoBehaviour
         if (noInputAllowedTimer <= 0 && Input.anyKey)
         {
             //return to hub
-            SceneManager.LoadScene(1);
+            GameManager.LoadScene(2);
         }
         
     }

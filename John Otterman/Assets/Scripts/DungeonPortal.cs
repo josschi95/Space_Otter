@@ -1,30 +1,19 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class DungeonPortal : MonoBehaviour
 {
-    [SerializeField] private GameObject[] dimensionPanels;
-    [SerializeField] private Button[] dimensionTabs; //used to switch between dimensions
-
+    [SerializeField] private GameObject portalUI;
     [SerializeField] private Button[] stageButtons; //used to select the stage in the dimension
-    [SerializeField] private GameObject[] stageLockIcons; //indicator that the stage is not yet unlocked
-    [Space]
-    public GameObject portalUI;
     [SerializeField] private Button panelCloseButton;
+    [SerializeField] private GameObject[] stageLockIcons; //indicator that the stage is not yet unlocked
 
     private void Start()
     {
-        for (int i = 0; i < dimensionTabs.Length; i++)
-        {
-            int tab = i;
-            dimensionTabs[tab].onClick.AddListener(delegate { ToggleDimensionTabs(tab); });
-        }
-
         for (int i = 0; i < stageButtons.Length; i++)
         {
             int stage = i;
-            stageButtons[i].onClick.AddListener(delegate { LoadStage(stage); });
+            stageButtons[stage].onClick.AddListener(delegate { LoadStage(stage); });
         }
 
         panelCloseButton.onClick.AddListener(ClosePortal);
@@ -43,12 +32,6 @@ public class DungeonPortal : MonoBehaviour
 
         portalUI.SetActive(true);
         PlayerController.instance.ToggleMovement(false);
-
-        //Open to the tab with the highest available stage
-        int currentDimensionTab = 0;
-        if (GameManager.instance.ClearedStages[5] == true) currentDimensionTab = 2;
-        else if (GameManager.instance.ClearedStages[2] == true) currentDimensionTab = 1;
-        ToggleDimensionTabs(currentDimensionTab);
 
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
@@ -78,28 +61,20 @@ public class DungeonPortal : MonoBehaviour
         Cursor.visible = false;
     }
 
-    private void ToggleDimensionTabs(int dimension)
-    {
-        for (int i = 0; i < dimensionPanels.Length; i++)
-        {
-            dimensionPanels[i].SetActive(i == dimension);
-        }
-    }
-
     private void LoadStage(int stage)
     {
-        int buildIndex = 2; //Dungeon_00
+        int buildIndex = 3; //Dungeon_00
         int stageLevel = 0; //First stage of that dungeon
 
-        if (stage >= 6)
+        if (stage >= 6) 
         {
-            buildIndex = 4;
+            buildIndex = 7; //Dungeon_02
             if (stage == 7) stageLevel = 1;
             else if (stage == 8) stageLevel = 2;
         }
-        else if (stage >= 3)
+        else if (stage >= 3) 
         {
-            buildIndex = 3;
+            buildIndex = 5; //Dungeon_01
             if (stage == 4) stageLevel = 1;
             else if (stage == 5) stageLevel = 2;
         }
@@ -109,8 +84,7 @@ public class DungeonPortal : MonoBehaviour
         }
 
         PlayerController.instance.ToggleMovement(true);
-        //Debug.Log("Loading Stage " + stageLevel + " of scene at build Index " + buildIndex + ": " + SceneManager.GetSceneByBuildIndex(buildIndex).name);
         GameManager.instance.SetStageDifficulty(stageLevel);
-        SceneManager.LoadScene(buildIndex);
+        GameManager.LoadScene(buildIndex);
     }
 }

@@ -7,41 +7,33 @@ public class DungeonManager : MonoBehaviour
     public delegate void OnEnemyCountChangeCallback();
     public OnEnemyCountChangeCallback onEnemyCountChange;
 
-    public bool DoNotSpawn;
-    public bool TestGenerate;
-    public int dungeonSizeOverride;
-
     public static DungeonManager instance;
 
-
-    public int globalStageIndex { get; private set; } //scale from 0-8, the world level
-    private int stageIndex; //scale from 0-2, the stage within a dimension
-
-    [SerializeField] private World dimension;
     [SerializeField] private DungeonGenerator generator;
-    private int[] dungeonSizePerLevel = { 5, 8, 10, 10, 12, 15, 15, 17, 20 };
     [Space]
-    [SerializeField] private GameObject[] lightEnemyPrefabs;
-    [SerializeField] private GameObject[] heavyEnemyPrefab;
+    [SerializeField] private GameObject[] lightEnemyPrefabs; //listed from easiest to hardest
+    [SerializeField] private GameObject[] heavyEnemyPrefab; //listed from easiest to hardest
     [SerializeField] private GameObject[] buildingPrefabs;
-    private float[] chanceToSpawnHeavy = { 0.25f, 0.3f, 0.35f };
     [Space]
-    [SerializeField] private GameObject hubPortal;
 
     [SerializeField] private int minEnemiesToSpawn, maxEnemiesToSpawn;
     [SerializeField] private GameObject[] remainingEnemyMapMarkers;
+    [SerializeField] private string[] m_lootPoolTags;
+    [SerializeField] private GameObject hubPortal, bossPortal;
 
+    #region - Non Serialized -
     private List<DungeonRoom> rooms;
     private List<EnemyController> enemies;
     private List<Vector3> nodePositions;
-
-    public int enemiesRemaining { get; private set; }
-    public int totalEnemyCount { get; private set; }
-
-    [SerializeField] private string[] m_lootPoolTags;
+    public int globalStageIndex { get; private set; } //scale from 0-8, the world level
+    private int[] dungeonSizePerLevel = { 5, 8, 10, 10, 12, 15, 15, 17, 20 };
+    private float[] chanceToSpawnHeavy = { 0.15f, 0.2f, 0.25f, 0.3f, 0.35f, 0.4f, 0.45f, 0.5f, 0.55f };
+    private float[] chanceForStrongVariant = { 0.05f, 0.1f, 0.15f, 0.2f, 0.2f, 0.25f, 0.25f, 0.3f, 0.3f };
     private float portalSpawnDelayTime = 2.5f;
+    public int totalEnemyCount { get; private set; }
+    public int enemiesRemaining { get; private set; }
+    #endregion
 
-    #region - INIT -
     private void Awake()
     {
         instance = this;
@@ -49,29 +41,16 @@ public class DungeonManager : MonoBehaviour
 
     private void Start()
     {
-        if (TestGenerate)
-        {
-            generator.GenerateDungeon(dungeonSizeOverride);
-        }
+        //if (TestGenerate) generator.GenerateDungeon(dungeonSizeOverride);
+
+        globalStageIndex = GameManager.instance.globalStageIndex;
+        if (GameManager.instance.GetSceneIndex() == 1) TutorialSetup();
+        else CreateDungeon();
 
         CullLootTags();
-
-        for (int i = 0; i < remainingEnemyMapMarkers.Length; i++)
-        {
-            remainingEnemyMapMarkers[i].SetActive(false);
-        }
     }
 
-    public void SetStageNum(int num)
-    {
-        stageIndex = num;
-
-        globalStageIndex = (int)dimension * 3 + stageIndex;
-
-        if (dimension == World.Tutorial) TutorialSetup();
-        else  CreateDungeon();
-    }
-
+    #region - Dungeon Setup -
     private void TutorialSetup()
     {
         PlayerController.instance.onPlayerDimensionChange += OnDimensionSwitch;
@@ -172,25 +151,23 @@ public class DungeonManager : MonoBehaviour
 
     private void GenerateEnemies()
     {
-        if (DoNotSpawn) return;
-
         enemies = new List<EnemyController>();
 
         for (int i = 0; i < rooms.Count; i++)
         {
             if (rooms[i].transform.position == Vector3.zero) continue; //Don't spawn enemies in the first room the player is in
 
-            int numToSpawn = Random.Range(minEnemiesToSpawn, maxEnemiesToSpawn) + stageIndex;
-            bool spawnHeavy = Random.value <= chanceToSpawnHeavy[stageIndex];
+            int numToSpawn = Random.Range(minEnemiesToSpawn, maxEnemiesToSpawn) + Mathf.RoundToInt(globalStageIndex / 2);
+            bool spawnHeavy = Random.value <= chanceToSpawnHeavy[globalStageIndex];
             for (int n = 0; n < numToSpawn; n++)
             {
                 Vector3 pos = rooms[i].transform.position;
                 pos.x += Random.Range(-0.5f, 0.5f) * n;
                 pos.y += Random.Range(-1f, 1f) * n;
 
-                int index;
-                if (spawnHeavy) index = Random.Range(0, heavyEnemyPrefab.Length);
-                else index = Random.Range(0, lightEnemyPrefabs.Length);
+                int index = 0; float f = Random.value;
+                if (f <= chanceForStrongVariant[globalStageIndex]) index = 2;
+                else if (f <= chanceForStrongVariant[globalStageIndex] * 2) index = 1;
                 SpawnEnemy(spawnHeavy, index, pos);
             }
         }
@@ -249,7 +226,7 @@ public class DungeonManager : MonoBehaviour
     {
         PlayerController.instance.SetInvincible(true);
 
-        if (globalStageIndex != 8)
+        if (globalStageIndex != 8 && globalStageIndex != 1)
             GameManager.instance.OnStageClear(globalStageIndex);       
 
         Vector3 desiredSpawnPosition = rooms[0].transform.position;
@@ -269,7 +246,25 @@ public class DungeonManager : MonoBehaviour
     private IEnumerator PortalSpawnDelay(Vector3 portalPos)
     {
         yield return new WaitForSeconds(portalSpawnDelayTime);
-        Instantiate(hubPortal, portalPos, Quaternion.identity);
+
+        switch (globalStageIndex)
+        {
+            case 2:
+                var go1 = Instantiate(bossPortal, portalPos, Quaternion.identity);
+                go1.GetComponent<HubPortal>().SetBossStageIndex(4);
+                break;
+            case 5:
+                var go2 = Instantiate(bossPortal, portalPos, Quaternion.identity);
+                go2.GetComponent<HubPortal>().SetBossStageIndex(5);
+                break;
+            case 8:
+                var go3 = Instantiate(bossPortal, portalPos, Quaternion.identity);
+                go3.GetComponent<HubPortal>().SetBossStageIndex(6);
+                break;
+            default:
+                Instantiate(hubPortal, portalPos, Quaternion.identity);
+                break;
+        }
     }
 
     public string GetLootTag()
@@ -335,6 +330,4 @@ public class DungeonManager : MonoBehaviour
         PlayerController.instance.ToggleMovement(false);
     }
 }
-
-public enum World { World_00, World_01, World_02, Tutorial }
 public enum Dimension { Dimension_00, Dimension_01, Dimension_02 }

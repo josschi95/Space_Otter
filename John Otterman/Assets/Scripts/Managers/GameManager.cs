@@ -16,9 +16,9 @@ public class GameManager : MonoBehaviour
 
     public PlayerController player { get; private set; }
 
-    public JSONSaving saveSystem { get; private set; }
+    //public JSONSaving saveSystem { get; private set; }
 
-    public int sceneStageDifficulty { get; private set; }
+    public int globalStageIndex { get; private set; }
 
     public Material spriteFlashMat;
     private Coroutine scoreMultiplierDecayCoroutine;
@@ -47,7 +47,7 @@ public class GameManager : MonoBehaviour
 
         instance = this;
         DontDestroyOnLoad(gameObject);
-        saveSystem = GetComponent<JSONSaving>();
+        //saveSystem = GetComponent<JSONSaving>();
         SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
@@ -56,7 +56,6 @@ public class GameManager : MonoBehaviour
         var dungeonManager = DungeonManager.instance;
         if (dungeonManager != null) //the player has entered a dungeon
         {
-            dungeonManager.SetStageNum(sceneStageDifficulty);
             scoreMultiplierDecayCoroutine = StartCoroutine(ScoreMultiplierDecay());
         }
         else if (scoreMultiplierDecayCoroutine != null) StopCoroutine(scoreMultiplierDecayCoroutine);
@@ -69,20 +68,38 @@ public class GameManager : MonoBehaviour
 
         if (scene.buildIndex > 0) ObjectPooler.OnSceneChange();
         AudioManager.SetTheme(scene.buildIndex);
-        UIManager.ToggleHUD(scene.buildIndex >= 1 && scene.buildIndex <= 5);
+        UIManager.ToggleHUD(scene.buildIndex >= 1 && scene.buildIndex <= 6);
 
         //Save when the player enters the hub
-        if (scene.buildIndex == 1) saveSystem.SaveData();
+        //if (scene.buildIndex == 1) saveSystem.SaveData();
     }
 
     private void PlayerSceneChanges(int buildIndex)
     {
         player = PlayerController.instance;
-        player.combat.ToggleCombat(buildIndex >= 2 && buildIndex <= 5);
+
+        bool canAttack = true;
+        if (buildIndex == 0 || buildIndex == 2 || buildIndex == 9) canAttack = false;
+        player.combat.ToggleCombat(canAttack);
         player.transform.position = Vector3.zero;
-        if (buildIndex == 6) player.transform.position = Vector2.one * 100;
         player.OnRestoreAll();
+        //if (buildIndex == 6) player.transform.position = Vector2.one * 100;
         
+    }
+
+    public int GetSceneIndex()
+    {
+        return SceneManager.GetActiveScene().buildIndex;
+    }
+
+    public static void LoadScene(int index)
+    {
+        instance.LoadSceneByIndex(index);
+    }
+
+    private void LoadSceneByIndex(int index)
+    {
+        SceneManager.LoadScene(index);
     }
 
     #region - Player Score -
@@ -151,7 +168,7 @@ public class GameManager : MonoBehaviour
     #region - Stage Settings -
     public void SetStageDifficulty(int difficulty)
     {
-        sceneStageDifficulty = difficulty;
+        globalStageIndex = difficulty;
         //Debug.Log("Inter-Dimension Index set to " + difficulty);
     }
 

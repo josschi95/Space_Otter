@@ -75,49 +75,4 @@ public class JSONSaving : MonoBehaviour
         var combat = PlayerController.instance.combat;
         combat.SetSavedValues(data.playerWeaponData);
     }
-
-    public void ResetSaveFile()
-    {
-        if (playerData == null) return;
-
-        playerData.playerClams = 0;
-
-        playerData.playerMaxHealth = 10;
-        playerData.playerMaxArmor = 10;
-
-        playerData.stagesCleared = new bool[9];
-        for (int i = 0; i < playerData.stagesCleared.Length; i++)
-        {
-            playerData.stagesCleared[i] = false;
-        }
-
-        playerData.stageHighScores = new int[9];
-        for (int i = 0; i < playerData.stageHighScores.Length; i++)
-        {
-            playerData.stageHighScores[i] = 0;
-        }
-
-        playerData.playerWeaponData = new PlayerWeapon[6];
-        for (int i = 0; i < playerData.playerWeaponData.Length; i++)
-        {
-
-            playerData.playerWeaponData[i] = new PlayerWeapon(PlayerController.instance.combat.PlayerWeapons[i].weapon);
-
-            if (i <= 1)
-            {
-                playerData.playerWeaponData[i].isUnlocked = true;
-            }
-            else
-            {
-                playerData.playerWeaponData[i].isUnlocked = false;
-            }
-
-            playerData.playerWeaponData[i].damage_Tier = 1;
-            playerData.playerWeaponData[i].attackRate_Tier = 1;
-            playerData.playerWeaponData[i].ammoCapacity_Tier = 1;
-            playerData.playerWeaponData[i].magazineCapacity_Tier = 1;
-        }
-
-        LoadData();
-    }
 }

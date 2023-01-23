@@ -28,10 +28,9 @@ public class AudioManager : MonoBehaviour
 
     public static void SetTheme(int sceneIndex)
     {
-        AudioClip clip = null; //Main_Title for Hub and Credits
-        if (sceneIndex == 0 || sceneIndex == 6) clip = instance.themes[0];
-        else if (sceneIndex == 1) clip = instance.themes[1]; //Player_Hub
-        else clip = instance.themes[2];
+        AudioClip clip = instance.themes[2]; //Main_Title for Hub and Credits
+        if (sceneIndex == 0 || sceneIndex == 7) clip = instance.themes[0];
+        else if (sceneIndex == 2) clip = instance.themes[1]; //Player_Hub
 
         instance.source.clip = clip;
         instance.source.Play();
