@@ -26,6 +26,7 @@ public class UIManager : MonoBehaviour
     private PlayerWeapon playerWeapon;
 
     [SerializeField] private GameObject panelParent; //The GameObject that holds all other elements
+    [SerializeField] private GameObject miniMap;
     [SerializeField] private Sprite[] pipStyles;
     [SerializeField] private Image[] emptyHealthPips;
     [SerializeField] private Image[] healthPips;
@@ -140,6 +141,7 @@ public class UIManager : MonoBehaviour
         OnHealthChange();
         OnArmorChange();
         UpdateWeaponDisplay();
+        UpdateHealthAndArmorBars();
     }
 
     private void Update()
@@ -150,7 +152,23 @@ public class UIManager : MonoBehaviour
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         //Loading main menu or the hub or credits
-        if (scene.buildIndex <= 1 || scene.buildIndex >= 6)
+        if (scene.buildIndex == 1 || scene.buildIndex == 3)
+        {
+            dungeonStatParent.SetActive(true);
+            DungeonManager.instance.onEnemyCountChange += DisplayEnemyCount;
+            DisplayEnemyCount();
+            miniMap.SetActive(true);
+        }
+        else
+        {
+            miniMap.SetActive(false);
+            dungeonStatParent.SetActive(false);
+            if (DungeonManager.instance != null)
+                DungeonManager.instance.onEnemyCountChange -= DisplayEnemyCount;
+        }
+
+
+        /*if (scene.buildIndex <= 1 || scene.buildIndex >= 6)
         {
             dungeonStatParent.SetActive(false);
             if (DungeonManager.instance != null)
@@ -167,7 +185,7 @@ public class UIManager : MonoBehaviour
             dungeonStatParent.SetActive(true);
             DungeonManager.instance.onEnemyCountChange += DisplayEnemyCount;
             DisplayEnemyCount();
-        }
+        }*/
     }
 
     private void DisplayAmmoCount()

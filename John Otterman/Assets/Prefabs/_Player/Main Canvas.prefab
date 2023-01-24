@@ -8495,6 +8495,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   panelParent: {fileID: 1302317343267037265}
+  miniMap: {fileID: 8072629874851127672}
   pipStyles:
   - {fileID: 21300000, guid: a02d61731808d114b9ce50f9d9d23940, type: 3}
   - {fileID: 21300000, guid: 27a69c9b2f2fe51458022517550dd539, type: 3}

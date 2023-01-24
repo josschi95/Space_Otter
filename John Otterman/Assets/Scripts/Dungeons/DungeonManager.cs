@@ -224,10 +224,15 @@ public class DungeonManager : MonoBehaviour
 
     private void OnStageComplete()
     {
+        PlayerController.instance.onPlayerDimensionChange -= OnDimensionSwitch;
+
         PlayerController.instance.SetInvincible(true);
 
-        if (globalStageIndex != 8 && globalStageIndex != 1)
-            GameManager.instance.OnStageClear(globalStageIndex);       
+        if (GameManager.instance.GetSceneIndex() == 3)
+        {
+            if (globalStageIndex != 2 && globalStageIndex != 5 && globalStageIndex != 8)
+                GameManager.instance.OnStageClear(globalStageIndex);
+        }
 
         Vector3 desiredSpawnPosition = rooms[0].transform.position;
         var dist = Vector2.Distance(rooms[0].transform.position, PlayerController.instance.transform.position);

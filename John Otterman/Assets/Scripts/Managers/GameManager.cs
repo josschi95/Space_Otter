@@ -68,7 +68,9 @@ public class GameManager : MonoBehaviour
 
         if (scene.buildIndex > 0) ObjectPooler.OnSceneChange();
         AudioManager.SetTheme(scene.buildIndex);
-        UIManager.ToggleHUD(scene.buildIndex >= 1 && scene.buildIndex <= 6);
+        bool showHud = true;
+        if (scene.buildIndex == 0 || scene.buildIndex == 7) showHud = false;
+        UIManager.ToggleHUD(showHud);
 
         //Save when the player enters the hub
         //if (scene.buildIndex == 1) saveSystem.SaveData();

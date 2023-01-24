@@ -177,7 +177,10 @@ public class PlayerCombat : MonoBehaviour
         PlayerController.instance.onNewPortal?.Invoke();
 
         var portalRot = Quaternion.Euler(0, 0, pointer.rotation.eulerAngles.z + 90);
-        var portal = ObjectPooler.Spawn("playerPortal", currentActiveWeapon.Muzzle.position, portalRot);
+
+        var pos = currentActiveWeapon.Muzzle.position + (Vector3.right * anim.GetFloat("horizontal") * 2);
+
+        var portal = ObjectPooler.Spawn("playerPortal", pos, portalRot);
         portal.GetComponent<PlayerPortal>()?.SetDimension(PlayerController.instance.CurrentDimension);
 
         timeOfNextPortal = Time.time + portalCooldown;

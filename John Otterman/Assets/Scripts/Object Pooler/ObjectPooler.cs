@@ -27,13 +27,33 @@ public class ObjectPooler : MonoBehaviour
             return;
         }
         instance = this;
+
+        GeneratePools();
     }
     #endregion
 
     public List<Pool> pools;
     public Dictionary<string, Pool> poolDictionary;
 
-    void Start()
+    /*private void Start()
+    {
+        poolDictionary = new Dictionary<string, Pool>();
+
+        foreach (Pool newPool in pools)
+        {
+            newPool.freeList = new List<GameObject>();
+            newPool.usedList = new List<GameObject>();
+
+            for (int i = 0; i < newPool.size; i++)
+            {
+                GenerateNewObject(newPool);
+            }
+
+            poolDictionary.Add(newPool.tag, newPool);
+        }
+    }*/
+
+    private void GeneratePools()
     {
         poolDictionary = new Dictionary<string, Pool>();
 

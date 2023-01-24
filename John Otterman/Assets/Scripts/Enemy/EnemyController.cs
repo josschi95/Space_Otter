@@ -57,6 +57,11 @@ public class EnemyController : MonoBehaviour, IDamageable, IDimensionHandler
         PlayerController.instance.onPlayerDimensionChange += OnPlayerSwitchDimension;
     }
 
+    private void OnDestroy()
+    {
+        PlayerController.instance.onPlayerDimensionChange -= OnPlayerSwitchDimension;
+    }
+
     private void Update()
     {
         if (!m_isAlive || !m_canAct) return;
