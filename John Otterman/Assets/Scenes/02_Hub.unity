@@ -5021,7 +5021,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 263425005}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -4.31, y: 4.72, z: 0}
+  m_LocalPosition: {x: -2.72, y: 4.72, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 366736974}
@@ -23469,7 +23469,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 6.84, y: 2.86}
+    oldSize: {x: 6.842617, y: 2.8600001}
     newSize: {x: 6.84, y: 2.86}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -23541,14 +23541,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 385f4d04262a3e544adf22789b9e9231, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dimensionPanels:
-  - {fileID: 869421961}
-  - {fileID: 0}
-  - {fileID: 0}
-  dimensionTabs:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  portalUI: {fileID: 201639023}
   stageButtons:
   - {fileID: 1342343950}
   - {fileID: 1771050966}
@@ -23559,6 +23552,7 @@ MonoBehaviour:
   - {fileID: 1758837598}
   - {fileID: 878947729}
   - {fileID: 1455133490}
+  panelCloseButton: {fileID: 1637230178}
   stageLockIcons:
   - {fileID: 1810091289}
   - {fileID: 919951460}
@@ -23569,8 +23563,6 @@ MonoBehaviour:
   - {fileID: 334424134}
   - {fileID: 2005547667}
   - {fileID: 1160212590}
-  portalUI: {fileID: 201639023}
-  panelCloseButton: {fileID: 1637230178}
 --- !u!95 &1962642247
 Animator:
   serializedVersion: 3

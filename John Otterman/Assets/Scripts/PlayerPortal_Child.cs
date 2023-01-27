@@ -35,8 +35,8 @@ public class PlayerPortal_Child : MonoBehaviour
             if (target.GetDimension() == secondaryDimension) target.SetDimension(primaryDimension);
             else if (collision.gameObject.GetComponent<Projectile>())
             {
-                Debug.Log("Projectile");
-                Debug.Break();
+                Debug.Log("Projectile Failed to Register");
+                //Debug.Break();
             }
         }
     }

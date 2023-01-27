@@ -48,10 +48,10 @@ public class DungeonRoom : MonoBehaviour
         if (spriteRenderer == null)
         {
             Debug.Log("missing. Fix this");
-            for (int i = 0; i < m_entrances.Length; i++)
+            /*for (int i = 0; i < m_entrances.Length; i++)
             {
                 Debug.Log("entrance: " + m_entrances[i].direction);
-            }
+            }*/
             return;
         }
         spriteRenderer.sprite = dimensionalSprites[(int)dimension];

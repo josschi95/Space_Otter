@@ -61,30 +61,10 @@ public class DungeonPortal : MonoBehaviour
         Cursor.visible = false;
     }
 
-    private void LoadStage(int stage)
+    private void LoadStage(int index)
     {
-        int buildIndex = 3; //Dungeon_00
-        int stageLevel = 0; //First stage of that dungeon
-
-        if (stage >= 6) 
-        {
-            buildIndex = 7; //Dungeon_02
-            if (stage == 7) stageLevel = 1;
-            else if (stage == 8) stageLevel = 2;
-        }
-        else if (stage >= 3) 
-        {
-            buildIndex = 5; //Dungeon_01
-            if (stage == 4) stageLevel = 1;
-            else if (stage == 5) stageLevel = 2;
-        }
-        else
-        {
-            stageLevel = stage;
-        }
-
         PlayerController.instance.ToggleMovement(true);
-        GameManager.instance.SetStageDifficulty(stageLevel);
-        GameManager.LoadScene(buildIndex);
+        GameManager.instance.SetStageIndex(index);
+        GameManager.LoadScene(3);
     }
 }

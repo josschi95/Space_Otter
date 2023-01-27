@@ -22,9 +22,10 @@ public class DungeonManager : MonoBehaviour
     [SerializeField] private GameObject hubPortal, bossPortal;
 
     #region - Non Serialized -
-    private List<DungeonRoom> rooms;
-    private List<EnemyController> enemies;
+    [SerializeField] private List<DungeonRoom> rooms;
+    [SerializeField] private List<EnemyController> enemies;
     private List<Vector3> nodePositions;
+    public int index_Test;
     public int globalStageIndex { get; private set; } //scale from 0-8, the world level
     private int[] dungeonSizePerLevel = { 5, 8, 10, 10, 12, 15, 15, 17, 20 };
     private float[] chanceToSpawnHeavy = { 0.15f, 0.2f, 0.25f, 0.3f, 0.35f, 0.4f, 0.45f, 0.5f, 0.55f };
@@ -44,6 +45,7 @@ public class DungeonManager : MonoBehaviour
         //if (TestGenerate) generator.GenerateDungeon(dungeonSizeOverride);
 
         globalStageIndex = GameManager.instance.globalStageIndex;
+        index_Test = globalStageIndex;
         if (GameManager.instance.GetSceneIndex() == 1) TutorialSetup();
         else CreateDungeon();
 
@@ -144,7 +146,7 @@ public class DungeonManager : MonoBehaviour
 
             nodePositions.RemoveAt(nodeIndex);
 
-            int dimensionIndex = Random.Range(0, 3);
+            int dimensionIndex = Random.Range(0, 2);
             go.GetComponent<Building>()?.SetDimension((Dimension)dimensionIndex);
         }
     }
@@ -191,7 +193,7 @@ public class DungeonManager : MonoBehaviour
             enemies.Add(newEnemy);
             enemiesRemaining++;
             newEnemy.onEnemyDeath += UpdateStageEnemies;
-            newEnemy.SetDimension((Dimension)Random.Range(0, 3)); //Set the enemy to a random dimension
+            newEnemy.SetDimension((Dimension)Random.Range(0, 2)); //Set the enemy to a random dimension
 
             newEnemy.OnPlayerSwitchDimension(PlayerController.instance.CurrentDimension);
         }
@@ -335,4 +337,4 @@ public class DungeonManager : MonoBehaviour
         PlayerController.instance.ToggleMovement(false);
     }
 }
-public enum Dimension { Dimension_00, Dimension_01, Dimension_02 }
+public enum Dimension { Dimension_00, Dimension_01 }

@@ -17,8 +17,8 @@ public class DebugController : MonoBehaviour
     public static DebugCommand TOGGLE_GOD_MODE;
     public static DebugCommand<int> GRANT_CLAMS;
     public static DebugCommand<int> UNLOCK_STAGE;
+    public static DebugCommand<int> SET_SCENE;
     public static DebugCommand UNLOCK_ALL;
-    public static DebugCommand LOCK_ALL;
     public static DebugCommand RESET;
 
     public List<object> commandList;
@@ -37,37 +37,44 @@ public class DebugController : MonoBehaviour
             if (DungeonManager.instance != null)
             {
                 DungeonManager.instance.KillAll();
+                Debug.Log("Kill All");
             }
         });
 
         TOGGLE_GOD_MODE = new DebugCommand("tgm", "Enables God Mode on player.", "tgm", () =>
         {
             PlayerController.instance.ToggleGodMode();
+            Debug.Log("Toggle God Mode");
         });
 
         GRANT_CLAMS = new DebugCommand<int>("clams", "Grants the player a given amount of clams.", "clams <amount>", (x) =>
         {
             GameManager.OnClamsGained(x);
+            Debug.Log("Gained " + x + " clams");
         });
 
         UNLOCK_STAGE = new DebugCommand<int>("unlock_stage", "Sets the given stage as complete.", "stage <num>", (x) =>
         {
             GameManager.instance.OnStageClear(x);
+            Debug.Log("Stage " + x + " clear");
+        });
+
+        SET_SCENE = new DebugCommand<int>("set_scene", "Sets the given stage as complete.", "scene <num>", (x) =>
+        {
+            GameManager.LoadScene(x);
+            Debug.Log("Loading Scene " + x);
         });
 
         UNLOCK_ALL = new DebugCommand("unlock_all", "Unlocks all stages.", "unlock_all", () =>
         {
             GameManager.instance.UnlockAll();
-        });
-
-        LOCK_ALL = new DebugCommand("lock_all", "Locks all stages.", "lock_all", () =>
-        {
-            GameManager.instance.LockAll();
+            Debug.Log("Unlocked all stages and weapons");
         });
 
         RESET = new DebugCommand("reset", "Resets all player stats.", "reset", () =>
         {
             PlayerController.instance.OnResetValues();
+            Debug.Log("Values Reset");
         });
 
         commandList = new List<object>
@@ -77,8 +84,8 @@ public class DebugController : MonoBehaviour
             TOGGLE_GOD_MODE,
             GRANT_CLAMS,
             UNLOCK_STAGE,
+            SET_SCENE,
             UNLOCK_ALL,
-            LOCK_ALL,
             RESET
         };
     }

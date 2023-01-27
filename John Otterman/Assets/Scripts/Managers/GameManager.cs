@@ -81,12 +81,11 @@ public class GameManager : MonoBehaviour
         player = PlayerController.instance;
 
         bool canAttack = true;
-        if (buildIndex == 0 || buildIndex == 2 || buildIndex == 9) canAttack = false;
+        if (buildIndex == 0 || buildIndex == 2 || buildIndex == 7) canAttack = false;
         player.combat.ToggleCombat(canAttack);
         player.transform.position = Vector3.zero;
         player.OnRestoreAll();
-        //if (buildIndex == 6) player.transform.position = Vector2.one * 100;
-        
+        player.SetDimension(Dimension.Dimension_00);        
     }
 
     public int GetSceneIndex()
@@ -168,7 +167,7 @@ public class GameManager : MonoBehaviour
     #endregion
 
     #region - Stage Settings -
-    public void SetStageDifficulty(int difficulty)
+    public void SetStageIndex(int difficulty)
     {
         globalStageIndex = difficulty;
         //Debug.Log("Inter-Dimension Index set to " + difficulty);
@@ -216,6 +215,11 @@ public class GameManager : MonoBehaviour
         for (int i = 0; i < m_clearedStages.Length; i++)
         {
             m_clearedStages[i] = true;
+        }
+
+        for (int i = 0; i < player.combat.PlayerWeapons.Length; i++)
+        {
+            player.combat.OnNewWeaponUnlocked(i);
         }
     }
 

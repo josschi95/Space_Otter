@@ -1320,11 +1320,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 153084ffc15f9402597e5640428fa8b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  spriteRenderer: {fileID: 0}
   pointsValue: 10000
-  m_maxHealth: 10
-  maxArmor: 20
+  m_maxHealth: 500
+  maxArmor: 0
+  m_damageOnContact: 0
   chaseRadius: 100
   movementSpeed: 5
+  jelly: 0
   m_currentDimension: 0
 --- !u!50 &1496080001
 Rigidbody2D:

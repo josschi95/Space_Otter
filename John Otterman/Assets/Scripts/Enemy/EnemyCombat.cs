@@ -37,6 +37,8 @@ public class EnemyCombat : MonoBehaviour
 
     public void SetWeapon(Weapon weapon)
     {
+        if (this.weapon != null) ReturnWeaponToPool();
+
         this.weapon = weapon;
 
         if (unarmedOverride)

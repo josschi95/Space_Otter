@@ -48,13 +48,13 @@ public class PlayerPortal : MonoBehaviour, IPooledObject
     {
         primaryDimension = fromDimension;
 
-        if (primaryDimension == Dimension.Dimension_02)
+        if (primaryDimension == Dimension.Dimension_01)
         {
             secondaryDimension = Dimension.Dimension_00;
         }
         else
         {
-            secondaryDimension = (Dimension)(int)fromDimension + 1;
+            secondaryDimension = Dimension.Dimension_01;
         }
 
         //Debug.Log("Primary: " + primaryDimension.ToString() + ", " + "Secondary: " + secondaryDimension.ToString());
@@ -75,8 +75,8 @@ public class PlayerPortal : MonoBehaviour, IPooledObject
             if (target.GetDimension() == primaryDimension) target.SetDimension(secondaryDimension);
             else if (collision.gameObject.GetComponent<Projectile>())
             {
-                Debug.Log("Projectile");
-                Debug.Break();
+                Debug.Log("Projectile Failed to Register");
+                //Debug.Break();
             }
         }
     }

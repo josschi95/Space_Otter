@@ -28,6 +28,7 @@ public class MobiusBossBattle : MonoBehaviour
     private void Start()
     {
         mobius.PauseCharacter();
+        mobius.transform.position = new Vector3(0, 9, 0);
         
         player = PlayerController.instance;
         player.ToggleMovement(false);
@@ -107,7 +108,7 @@ public class MobiusBossBattle : MonoBehaviour
     private void OnEnterFirstPhase()
     {
         battlePhaseIndex = 1;
-        Debug.Log("Entering battle phase: " + battlePhaseIndex);
+        //Debug.Log("Entering battle phase: " + battlePhaseIndex);
 
         OnSpawnMinions();
     }
@@ -116,7 +117,7 @@ public class MobiusBossBattle : MonoBehaviour
     private void OnEnterSecondPhase()
     {
         battlePhaseIndex = 2;
-        Debug.Log("Entering battle phase: " + battlePhaseIndex);
+        //Debug.Log("Entering battle phase: " + battlePhaseIndex);
         //Switch to minigun from AR
     }
 
@@ -124,7 +125,7 @@ public class MobiusBossBattle : MonoBehaviour
     private void OnEnterThirdPhase()
     {
         battlePhaseIndex = 3;
-        Debug.Log("Entering battle phase: " + battlePhaseIndex);
+        //Debug.Log("Entering battle phase: " + battlePhaseIndex);
 
         OnSpawnMinions();
     }
@@ -133,7 +134,7 @@ public class MobiusBossBattle : MonoBehaviour
     private void OnEnterFourthPhase()
     {
         battlePhaseIndex = 4;
-        Debug.Log("Entering battle phase: " + battlePhaseIndex);
+        //Debug.Log("Entering battle phase: " + battlePhaseIndex);
         
         mobiusTeleportDelay = 6f;
     }
@@ -161,7 +162,7 @@ public class MobiusBossBattle : MonoBehaviour
 
     private void OnSpawnMinions()
     {
-        Debug.Log("Spawning Minions");
+        //Debug.Log("Spawning Minions");
         for (int i = 1; i < teleportationPositions.Length; i++)
         {
             int index = Random.Range(0, enemyPrefabs.Length);
@@ -175,6 +176,12 @@ public class MobiusBossBattle : MonoBehaviour
         player.SetInvincible(true);
         GameManager.instance.OnStageClear(8); //Player successfully cleared the final stage
         Invoke("RollCredits", 5f);
+
+        var remainingEnemies = FindObjectsOfType<EnemyController>();
+        for (int i = 0; i < remainingEnemies.Length; i++)
+        {
+            remainingEnemies[i].OnDamageEnemy(500);
+        }
     }
 
     //Invoked upon player victory, after short delay
