@@ -6,6 +6,7 @@ public class MobiusBossBattle : MonoBehaviour
     private PlayerController player;
 
     [SerializeField] private EnemyController mobius;
+    [SerializeField] private Weapon minigun;
     [SerializeField] private Transform[] teleportationPositions;
     [Space]
 
@@ -19,6 +20,8 @@ public class MobiusBossBattle : MonoBehaviour
     [SerializeField] private Text dialogueField;
     [SerializeField] private Button dialogueButton;
     int dialogueIndex = 0; //The current line of displayed dialogue
+    private bool canTeleport;
+
     private string[] dialogueLines = 
     {
         "It ends here Morbius!",
@@ -28,7 +31,7 @@ public class MobiusBossBattle : MonoBehaviour
     private void Start()
     {
         mobius.PauseCharacter();
-        mobius.transform.position = new Vector3(0, 9, 0);
+        canTeleport = false;
         
         player = PlayerController.instance;
         player.ToggleMovement(false);
@@ -73,6 +76,7 @@ public class MobiusBossBattle : MonoBehaviour
         Cursor.lockState = CursorLockMode.Confined;
         Cursor.visible = false;
 
+        canTeleport = true;
         dialogueBox.SetActive(false);
         player.ToggleMovement(true);
         player.combat.ToggleCombat(true);
@@ -86,7 +90,8 @@ public class MobiusBossBattle : MonoBehaviour
     //Called each time mobius takes damage to determine battle phase
     private void CheckForNextPhase()
     {
-        float percent = mobius.currentHealth / mobius.MaxHealth;
+        float current = mobius.currentHealth;
+        float percent = current / mobius.MaxHealth;
         switch (battlePhaseIndex)
         {
             case 0:
@@ -118,7 +123,8 @@ public class MobiusBossBattle : MonoBehaviour
     {
         battlePhaseIndex = 2;
         //Debug.Log("Entering battle phase: " + battlePhaseIndex);
-        //Switch to minigun from AR
+        mobius.GetComponent<EnemyCombat>().SetWeapon(minigun);
+        AdjustWeaponSize();
     }
 
     //Mobius health decreased to 35% of its max
@@ -140,9 +146,17 @@ public class MobiusBossBattle : MonoBehaviour
     }
     #endregion
 
+    private void AdjustWeaponSize()
+    {
+        var child = mobius.transform.GetChild(1).gameObject.transform.GetChild(1);
+        Debug.Log(child.name);
+        child.transform.localScale = Vector3.one;
+        child.transform.localEulerAngles = Vector3.zero;
+    }
+
     private void OnTeleportMobius()
     {
-        if (!mobius.IsAlive) return;
+        if (!mobius.IsAlive || !canTeleport) return;
         Transform locationToTeleport = teleportationPositions[0];
         float dist = Vector2.Distance(locationToTeleport.position, player.transform.position);
 
@@ -172,6 +186,7 @@ public class MobiusBossBattle : MonoBehaviour
 
     private void OnPlayerVictory()
     {
+        canTeleport = false;
         teleportCooldownTimer = 50;
         player.SetInvincible(true);
         GameManager.instance.OnStageClear(8); //Player successfully cleared the final stage

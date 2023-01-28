@@ -56,6 +56,7 @@ public class PlayerController : MonoBehaviour, IDamageable, IDimensionHandler
     private float lastDimensionSwap;
     [SerializeField] private Dimension m_currentDimension;
     public Dimension CurrentDimension => m_currentDimension;
+    public bool godMode { get; private set; }
 
     private void Awake()
     {
@@ -189,7 +190,7 @@ public class PlayerController : MonoBehaviour, IDamageable, IDimensionHandler
     #region - Health -
     public void OnDamage(int dmg)
     {
-        if (Time.time < damageCooldown || isInvincible || !isAlive) return;
+        if (Time.time < damageCooldown || isInvincible || !isAlive || godMode) return;
         //if (dimension != m_currentDimension) return;
 
         if (currentArmor > 0)
@@ -343,6 +344,6 @@ public class PlayerController : MonoBehaviour, IDamageable, IDimensionHandler
 
     public void ToggleGodMode()
     {
-
+        godMode = !godMode;
     }
 }

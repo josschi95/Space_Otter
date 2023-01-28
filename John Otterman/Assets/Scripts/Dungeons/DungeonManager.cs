@@ -226,8 +226,6 @@ public class DungeonManager : MonoBehaviour
 
     private void OnStageComplete()
     {
-        PlayerController.instance.onPlayerDimensionChange -= OnDimensionSwitch;
-
         PlayerController.instance.SetInvincible(true);
 
         if (GameManager.instance.GetSceneIndex() == 3)
@@ -248,6 +246,15 @@ public class DungeonManager : MonoBehaviour
             }
         }
         StartCoroutine(PortalSpawnDelay(desiredSpawnPosition));
+    }
+
+    private void OnDestroy()
+    {
+        PlayerController.instance.onPlayerDimensionChange -= OnDimensionSwitch;
+
+        rooms.Clear();
+        enemies.Clear();
+        nodePositions?.Clear();
     }
 
     private IEnumerator PortalSpawnDelay(Vector3 portalPos)
@@ -323,9 +330,9 @@ public class DungeonManager : MonoBehaviour
 
     public void KillAll()
     {
-        for (int i = 0; i < enemies.Count; i++)
+        for (int i = enemies.Count - 1; i >= 0; i--)
         {
-            enemies[i].OnDamage(int.MaxValue);
+            enemies[i].OnDamage(500);
         }
     }
 

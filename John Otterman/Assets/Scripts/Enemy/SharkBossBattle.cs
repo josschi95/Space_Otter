@@ -14,8 +14,7 @@ public class SharkBossBattle : MonoBehaviour
     [SerializeField] private GameObject hubPortal;
     private int battlePhaseIndex = 0; //The current boss battle phase, triggers events and determines behavior changes
 
-    // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
         player = PlayerController.instance;
 
@@ -24,13 +23,23 @@ public class SharkBossBattle : MonoBehaviour
         kingShark.onEnemyDeath += delegate { OnPlayerVictory(); };
 
         kingShark.OnPlayerSwitchDimension(player.CurrentDimension);
-        //Need to check for current player dimension
+
+        AdjustWeaponSize();
     }
 
+    private void AdjustWeaponSize()
+    {
+        var child = kingShark.transform.GetChild(1).gameObject.transform.GetChild(1);
+        Debug.Log(child.name);
+        child.transform.localScale = Vector3.one;
+        child.transform.localEulerAngles = Vector3.zero;
+    }
 
     private void CheckForNextPhase()
     {
-        float percent = kingShark.currentHealth / kingShark.MaxHealth;
+        float current = kingShark.currentHealth;
+        float percent = current / kingShark.MaxHealth;
+        Debug.Log("Max: " + kingShark.MaxHealth + ", Current: " + kingShark.currentHealth + ", Percent: " + percent);
         switch (battlePhaseIndex)
         {
             case 0:
@@ -66,6 +75,8 @@ public class SharkBossBattle : MonoBehaviour
     {
         //Debug.Log("Entering battle phase: " + battlePhaseIndex);
         kingShark.GetComponent<EnemyCombat>().SetWeapon(rifle);
+        AdjustWeaponSize();
+
         battlePhaseIndex = 3;
         OnSpawnMinions();
     }

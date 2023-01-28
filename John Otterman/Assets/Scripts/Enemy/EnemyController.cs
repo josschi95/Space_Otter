@@ -51,6 +51,7 @@ public class EnemyController : MonoBehaviour, IDamageable, IDimensionHandler
     {       
         anim = GetComponentInChildren<Animator>();
         combat = GetComponent<EnemyCombat>();
+
         currentHealth = m_maxHealth;
 
         player = GameManager.instance.player.transform;
@@ -223,7 +224,11 @@ public class EnemyController : MonoBehaviour, IDamageable, IDimensionHandler
 
     private void DropItem()
     {
-        if (DungeonManager.instance == null) return;
+        if (DungeonManager.instance == null)
+        {
+            ObjectPooler.Spawn("health", transform.position, Quaternion.identity);
+            return;
+        }
 
         var chanceToDropItem = Random.value;
         if (chanceToDropItem <= 0.5)

@@ -204,7 +204,7 @@ public class PlayerCombat : MonoBehaviour
         Reticle.Shake(0.1f, 0.1f); //Shake the reticle
         currentActiveWeapon.PlayEffects(); //Muzzle Flash
 
-        currentWeapon.roundsInMagazine--;
+        if (!PlayerController.instance.godMode) currentWeapon.roundsInMagazine--;       
         if (currentWeapon.roundsInMagazine <= 0) OnReload();
 
         attackCooldownTimer = Time.time + (1 / attackRate);

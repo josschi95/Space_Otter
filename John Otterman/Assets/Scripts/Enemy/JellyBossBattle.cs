@@ -34,7 +34,8 @@ public class JellyBossBattle : MonoBehaviour
 
     private void CheckForNextPhase()
     {
-        float percent = kingJelly.currentHealth / kingJelly.MaxHealth;
+        float current = kingJelly.currentHealth;
+        float percent = current / kingJelly.MaxHealth;
         switch (battlePhaseIndex)
         {
             case 0:
